@@ -1,0 +1,12 @@
+# Do not edit - changes here will be overwritten by Copier
+_commit: v1.0
+_src_path: gh:pydev-guide/pyrepo-copier
+author_email: talley.lambert@gmail.com
+author_name: Talley Lambert
+github_username: tlambert03
+mode: tooling
+module_name: dataclass_compat
+project_name: dataclass-compat
+project_short_description: Utilities for providing compatibility with many dataclass-like
+    libraries
+
