@@ -10,8 +10,6 @@ _T = TypeVar("_T")
 DC_KWARGS = {"frozen": True}
 if sys.version_info >= (3, 10):
     DC_KWARGS["slots"] = True
-    if sys.version_info >= (3, 10, 1):
-        DC_KWARGS["weakref_slot"] = True
 
 
 class _MISSING_TYPE(enum.Enum):
