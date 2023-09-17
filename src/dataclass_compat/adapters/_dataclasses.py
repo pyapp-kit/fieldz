@@ -50,6 +50,7 @@ def fields(obj: Any | type[Any]) -> tuple[Field, ...]:
             hash=f.hash,
             compare=f.compare,
             metadata=f.metadata,
+            native_field=f,
         )
         for f in dataclasses.fields(obj)
     )

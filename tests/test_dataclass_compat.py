@@ -89,6 +89,7 @@ def test_adapters(builder: Callable) -> None:
     fields_ = fields(obj)
     assert [f.name for f in fields_] == ["a", "b", "c", "d", "e"]
     assert [f.type for f in fields_] == [int, str, float, bool, list[int]]
+    assert [f.frozen for f in fields_] == [False] * 5
     assert [f.default for f in fields_] == [0, "b", 0.0, False, dataclasses.MISSING]
     assert [f.default_factory for f in fields_] == [dataclasses.MISSING] * 4 + [list]
 

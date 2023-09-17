@@ -79,6 +79,7 @@ def fields(class_or_instance: Any | type) -> tuple[Field, ...]:
                 compare=f.eq,
                 kw_only=f.kw_only,
                 hash=f.hash,
+                native_field=f,
             )
         )
 

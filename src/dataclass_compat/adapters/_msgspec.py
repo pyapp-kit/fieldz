@@ -61,6 +61,7 @@ def fields(class_or_instance: Any | type) -> tuple:
             default_factory=(
                 MISSING if f.default_factory is msgspec.NODEFAULT else f.default_factory
             ),
+            native_field=f,
         )
         for f in msgspec.structs.fields(class_or_instance)
     )

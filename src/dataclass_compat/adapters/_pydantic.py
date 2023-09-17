@@ -66,6 +66,7 @@ def fields(obj: pydantic.BaseModel | type[pydantic.BaseModel]) -> tuple[Field, .
                 type=finfo.annotation,
                 default=default,
                 default_factory=factory,
+                native_field=finfo,
             )
             fields.append(field)
     else:
@@ -87,6 +88,7 @@ def fields(obj: pydantic.BaseModel | type[pydantic.BaseModel]) -> tuple[Field, .
                 type=modelfield.outer_type_,  # type: ignore
                 default=default,
                 default_factory=factory,
+                native_field=modelfield,
             )
             fields.append(field)
 

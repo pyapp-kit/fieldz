@@ -25,6 +25,9 @@ class Field(Generic[_T]):
         default_factory=lambda: MappingProxyType({})
     )
     kw_only: bool = False
+    # extra
+    frozen: bool = False
+    native_field: Any | None = None
 
 
 @dataclasses.dataclass
