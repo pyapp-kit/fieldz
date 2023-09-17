@@ -60,13 +60,19 @@ def fields(obj: pydantic.BaseModel | type[pydantic.BaseModel]) -> tuple[Field, .
             factory: Callable | dataclasses._MISSING_TYPE = (
                 finfo.default_factory if callable(finfo.default_factory) else MISSING
             )
-            default = MISSING if finfo.default is PydanticUndefined else finfo.default
+            default = (
+                MISSING
+                if finfo.default in (PydanticUndefined, Ellipsis)
+                else finfo.default
+            )
+            extra = finfo.json_schema_extra
             field = Field(
                 name=name,
                 type=finfo.annotation,
                 default=default,
                 default_factory=factory,
                 native_field=finfo,
+                metadata=extra if isinstance(extra, dict) else {},
             )
             fields.append(field)
     else:
@@ -80,7 +86,10 @@ def fields(obj: pydantic.BaseModel | type[pydantic.BaseModel]) -> tuple[Field, .
             )
             default = (
                 MISSING
-                if (factory is not MISSING or modelfield.default is Undefined)
+                if (
+                    factory is not MISSING
+                    or modelfield.default in (Undefined, Ellipsis)
+                )
                 else modelfield.default
             )
             field = Field(
@@ -89,6 +98,7 @@ def fields(obj: pydantic.BaseModel | type[pydantic.BaseModel]) -> tuple[Field, .
                 default=default,
                 default_factory=factory,
                 native_field=modelfield,
+                metadata=modelfield.field_info.extra,  # type: ignore
             )
             fields.append(field)
 

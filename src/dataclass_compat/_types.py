@@ -1,8 +1,7 @@
 from __future__ import annotations
 
 import dataclasses
-from types import MappingProxyType
-from typing import Any, Callable, Generic, TypeVar
+from typing import Any, Callable, ClassVar, Generic, Mapping, TypeVar
 
 _T = TypeVar("_T")
 
@@ -21,15 +20,15 @@ class Field(Generic[_T]):
     hash: bool | None = None
     init: bool = True
     compare: bool = True
-    metadata: MappingProxyType[Any, Any] = dataclasses.field(
-        default_factory=lambda: MappingProxyType({})
-    )
+    metadata: Mapping[Any, Any] = dataclasses.field(default_factory=dict)
     kw_only: bool = False
     # extra
     frozen: bool = False
     native_field: Any | None = dataclasses.field(
         default=None, compare=False, hash=False
     )
+
+    MISSING: ClassVar[dataclasses._MISSING_TYPE] = dataclasses.MISSING
 
 
 @dataclasses.dataclass
