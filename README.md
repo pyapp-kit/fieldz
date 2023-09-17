@@ -117,7 +117,7 @@ assert (
 
 - [x] [`dataclasses`](https://docs.python.org/3/library/dataclasses.html)
 - [x] [`collections.namedtuple`](https://docs.python.org/3/library/collections.html#collections.namedtuple)
-- [x] [`pydantic`](https://docs.pydantic.dev/latest/)
+- [x] [`pydantic`](https://docs.pydantic.dev/latest/) (v1 and v2)
 - [x] [`attrs`](https://www.attrs.org/en/stable/overview.html)
 - [x] [`msgspec`](https://jcristharif.com/msgspec/)
 - [x] [`dataclassy`](https://github.com/biqqles/dataclassy)
