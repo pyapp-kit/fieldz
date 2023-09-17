@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import dataclasses
 import sys
 from typing import TYPE_CHECKING, Any, overload
 
@@ -36,6 +37,10 @@ is_instance = is_pydantic_model
 
 def asdict(obj: pydantic.BaseModel) -> dict[str, Any]:
     # sourcery skip: reintroduce-else
+
+    if hasattr(obj, "__dataclass_params__"):
+        return dataclasses.asdict(obj)
+
     if hasattr(obj, "model_dump"):
         return obj.model_dump()
     return obj.dict()
@@ -47,6 +52,9 @@ def astuple(obj: pydantic.BaseModel) -> tuple[Any, ...]:
 
 def replace(obj: pydantic.BaseModel, /, **changes: Any) -> Any:
     """Return a copy of obj with the specified changes."""
+    if hasattr(obj, "__dataclass_params__"):
+        return dataclasses.replace(obj, **changes)  # type: ignore
+
     if hasattr(obj, "model_copy"):
         return obj.model_copy(update=changes)
     return obj.copy(update=changes)
@@ -119,6 +127,16 @@ def fields(obj: pydantic.BaseModel | type[pydantic.BaseModel]) -> tuple[Field, .
 
 def params(obj: pydantic.BaseModel) -> DataclassParams:
     """Return parameters used to define the dataclass."""
+    if hasattr(obj, "__dataclass_params__"):
+        p = obj.__dataclass_params__
+        return DataclassParams(
+            frozen=p.frozen,
+            init=p.init,
+            repr=p.repr,
+            eq=p.eq,
+            order=p.order,
+            unsafe_hash=p.unsafe_hash,
+        )
     if hasattr(obj, "model_config"):
         cfg_dict: pydantic.ConfigDict = obj.model_config
         return DataclassParams(
@@ -128,4 +146,4 @@ def params(obj: pydantic.BaseModel) -> DataclassParams:
     else:
         cfg = obj.__config__  # type: ignore
         return DataclassParams(frozen=cfg.allow_mutation is False)
-    return DataclassParams()
+    return DataclassParams()  # pragma: no cover

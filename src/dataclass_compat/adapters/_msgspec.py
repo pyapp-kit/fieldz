@@ -75,4 +75,4 @@ def params(obj: msgspec.Struct) -> DataclassParams:
         # this will be covered in msgspec > 0.13.1
         frozen = bool(getattr(cfg, "frozen", False))
         return DataclassParams(frozen=frozen)
-    return DataclassParams()
+    return DataclassParams()  # pragma: no cover

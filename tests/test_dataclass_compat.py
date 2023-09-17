@@ -42,6 +42,20 @@ def _pydantic_model() -> type:
     return Model
 
 
+def _pydantic_dataclass() -> type:
+    from pydantic.dataclasses import dataclass
+
+    @dataclass
+    class Model:
+        a: int = 0
+        b: Optional[str] = None
+        c: float = 0.0
+        d: bool = False
+        e: List[int] = dataclasses.field(default_factory=list)
+
+    return Model
+
+
 def _sqlmodel() -> type:
     pytest.importorskip("sqlmodel")
     from sqlmodel import Field, SQLModel
@@ -120,6 +134,7 @@ def _django_model() -> type:
         _attrs_model,
         _msgspec_model,
         _sqlmodel,
+        _pydantic_dataclass,
         # _django_model,
     ],
 )
