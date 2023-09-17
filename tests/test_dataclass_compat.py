@@ -1,5 +1,5 @@
 import dataclasses
-from typing import Callable, NamedTuple
+from typing import Callable, List, NamedTuple
 
 import pytest
 from dataclass_compat import asdict, astuple, fields, params, replace
@@ -13,7 +13,7 @@ def _dataclass_model() -> type:
         b: str = "b"
         c: float = 0.0
         d: bool = False
-        e: list[int] = dataclasses.field(default_factory=list)
+        e: List[int] = dataclasses.field(default_factory=list)
 
     return Model
 
@@ -24,7 +24,7 @@ def _named_tuple() -> type:
         b: str = "b"
         c: float = 0.0
         d: bool = False
-        e: list[int] = []  # noqa
+        e: List[int] = []  # noqa
 
     return Model
 
@@ -37,7 +37,7 @@ def _pydantic_model() -> type:
         b: str = "b"
         c: float = 0.0
         d: bool = False
-        e: list[int] = Field(default_factory=list)
+        e: List[int] = Field(default_factory=list)
 
     return Model
 
@@ -51,7 +51,7 @@ def _sqlmodel() -> type:
         b: str = "b"
         c: float = 0.0
         d: bool = False
-        e: list[int] = Field(default_factory=list)
+        e: List[int] = Field(default_factory=list)
 
     return Model
 
@@ -65,7 +65,7 @@ def _attrs_model() -> type:
         b: str = "b"
         c: float = 0.0
         d: bool = False
-        e: list[int] = attr.field(default=attr.Factory(list))
+        e: List[int] = attr.field(default=attr.Factory(list))
 
     return Model
 
@@ -78,7 +78,7 @@ def _msgspec_model() -> type:
         b: str = "b"
         c: float = 0.0
         d: bool = False
-        e: list[int] = msgspec.field(default_factory=list)
+        e: List[int] = msgspec.field(default_factory=list)
 
     return Model
 
@@ -92,7 +92,7 @@ def _dataclassy_model() -> type:
         b: str = "b"
         c: float = 0.0
         d: bool = False
-        e: list[int] = []  # noqa
+        e: List[int] = []  # noqa
 
     return Model
 
@@ -105,7 +105,7 @@ def _django_model() -> type:
         b: str = models.CharField(default="b", max_length=255)
         c: float = models.FloatField(default=0.0)
         d: bool = models.BooleanField(default=False)
-        e: list[int] = models.JSONField(default=list)
+        e: List[int] = models.JSONField(default=list)
 
     return Model
 
@@ -130,7 +130,7 @@ def test_adapters(builder: Callable) -> None:
     assert astuple(obj) == (0, "b", 0.0, False, [])
     fields_ = fields(obj)
     assert [f.name for f in fields_] == ["a", "b", "c", "d", "e"]
-    assert [f.type for f in fields_] == [int, str, float, bool, list[int]]
+    assert [f.type for f in fields_] == [int, str, float, bool, List[int]]
     assert [f.frozen for f in fields_] == [False] * 5
     if is_named_tuple(obj):
         assert [f.default for f in fields_] == [0, "b", 0.0, False, []]
