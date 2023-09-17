@@ -43,6 +43,7 @@ def _pydantic_model() -> type:
 
 
 def _sqlmodel() -> type:
+    pytest.importorskip("sqlmodel")
     from sqlmodel import Field, SQLModel
 
     class Model(SQLModel):
