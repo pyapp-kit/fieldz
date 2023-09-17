@@ -50,7 +50,6 @@ test = "pytest"
 pydantic = ["v1", "v2"]
 python = ["3.8", "3.11"]
 
-
 [tool.hatch.envs.test.overrides]
 matrix.pydantic.extra-dependencies = [
   {value = "pydantic<2", if = ["v1"]},
