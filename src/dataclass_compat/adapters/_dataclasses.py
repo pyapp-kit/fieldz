@@ -43,8 +43,12 @@ def fields(obj: Any | type[Any]) -> tuple[Field, ...]:
         Field(
             name=f.name,
             type=f.type,
-            default=f.default,
-            default_factory=f.default_factory,
+            default=(
+                f.default if f.default is not dataclasses.MISSING else Field.MISSING
+            ),
+            default_factory=(
+                f.default_factory if callable(f.default_factory) else Field.MISSING
+            ),
             init=f.init,
             repr=f.repr,
             hash=f.hash,

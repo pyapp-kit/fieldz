@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import sys
-from dataclasses import MISSING
 from typing import TYPE_CHECKING, Any, ClassVar, Protocol
 
 from dataclass_compat._types import DataclassParams, Field
@@ -61,8 +60,8 @@ def fields(obj: Any | type) -> tuple:
     defaults = getattr(obj, "__defaults__", None) or getattr(obj, "__dict__", {})
     fields = []
     for name, type_ in dataclassy.fields(obj).items():
-        default = defaults.get(name, MISSING)
-        default_factory: Any = MISSING
+        default = defaults.get(name, Field.MISSING)
+        default_factory: Any = Field.MISSING
         # this is just how dataclassy does it... (you can assign a mutable default)
         # but, to match the other adapters, we perform a little checking to
         # normalize common cases to a "typical" default_factory
@@ -78,7 +77,7 @@ def fields(obj: Any | type) -> tuple:
             else:
                 # the general fallback case
                 default_factory = default.copy
-            default = MISSING
+            default = Field.MISSING
 
         fields.append(
             Field(

@@ -1,14 +1,11 @@
 from __future__ import annotations
 
 import sys
-from dataclasses import MISSING
-from typing import TYPE_CHECKING, Any, Callable, overload
+from typing import TYPE_CHECKING, Any, overload
 
 from dataclass_compat._types import DataclassParams, Field
 
 if TYPE_CHECKING:
-    import dataclasses
-
     import pydantic
     from typing_extensions import TypeGuard
 
@@ -56,7 +53,7 @@ def replace(obj: pydantic.BaseModel, /, **changes: Any) -> Any:
 
 
 def fields(obj: pydantic.BaseModel | type[pydantic.BaseModel]) -> tuple[Field, ...]:
-    fields = []
+    fields: list[Field] = []
     if hasattr(obj, "__pydantic_model__"):
         obj = obj.__pydantic_model__
 
@@ -64,11 +61,13 @@ def fields(obj: pydantic.BaseModel | type[pydantic.BaseModel]) -> tuple[Field, .
         from pydantic_core import PydanticUndefined
 
         for name, finfo in obj.model_fields.items():
-            factory: Callable | dataclasses._MISSING_TYPE = (
-                finfo.default_factory if callable(finfo.default_factory) else MISSING
+            factory = (
+                finfo.default_factory
+                if callable(finfo.default_factory)
+                else Field.MISSING
             )
             default = (
-                MISSING
+                Field.MISSING
                 if finfo.default in (PydanticUndefined, Ellipsis)
                 else finfo.default
             )
@@ -77,7 +76,7 @@ def fields(obj: pydantic.BaseModel | type[pydantic.BaseModel]) -> tuple[Field, .
                 name=name,
                 type=finfo.annotation,
                 default=default,
-                default_factory=factory,
+                default_factory=factory,  # type: ignore
                 native_field=finfo,
                 description=finfo.description,
                 metadata=extra if isinstance(extra, dict) else {},
@@ -91,11 +90,12 @@ def fields(obj: pydantic.BaseModel | type[pydantic.BaseModel]) -> tuple[Field, .
             factory = (
                 modelfield.default_factory
                 if callable(modelfield.default_factory)
-                else MISSING
+                else Field.MISSING
             )
             default = (
-                MISSING
-                if factory is not MISSING or modelfield.default in (Undefined, Ellipsis)
+                Field.MISSING
+                if factory is not Field.MISSING
+                or modelfield.default in (Undefined, Ellipsis)
                 else modelfield.default
             )
             # backport from pydantic2
@@ -107,7 +107,7 @@ def fields(obj: pydantic.BaseModel | type[pydantic.BaseModel]) -> tuple[Field, .
                 name=name,
                 type=annotations.get(name),  # rather than outer_type_
                 default=default,
-                default_factory=factory,
+                default_factory=(factory if callable(factory) else Field.MISSING),
                 native_field=modelfield,
                 description=modelfield.field_info.description,  # type: ignore
                 metadata=_extra_dict,

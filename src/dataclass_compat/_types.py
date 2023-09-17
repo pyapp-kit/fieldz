@@ -1,22 +1,32 @@
 from __future__ import annotations
 
 import dataclasses
-from typing import Any, Callable, ClassVar, Generic, Mapping, TypeVar
+import enum
+import sys
+from typing import Any, Callable, ClassVar, Generic, Literal, Mapping, TypeVar
 
 _T = TypeVar("_T")
 
+DC_KWARGS = {"frozen": True}
+if sys.version_info >= (3, 10):
+    DC_KWARGS["slots"] = True
+    if sys.version_info >= (3, 10, 1):
+        DC_KWARGS["weakref_slot"] = True
 
-@dataclasses.dataclass
+
+class _MISSING_TYPE(enum.Enum):
+    MISSING = enum.auto()
+
+
+@dataclasses.dataclass(**DC_KWARGS)
 class Field(Generic[_T]):
+    MISSING: ClassVar[Literal[_MISSING_TYPE.MISSING]] = _MISSING_TYPE.MISSING
+
     name: str
     type: type[_T] | None = None
     description: str | None = None
-    default: _T | dataclasses._MISSING_TYPE = dataclasses.field(
-        default_factory=lambda: dataclasses.MISSING
-    )
-    default_factory: Callable[[], _T] | dataclasses._MISSING_TYPE = dataclasses.field(
-        default_factory=lambda: dataclasses.MISSING
-    )
+    default: _T | Literal[_MISSING_TYPE.MISSING] = MISSING
+    default_factory: Callable[[], _T] | Literal[_MISSING_TYPE.MISSING] = MISSING
     repr: bool = True
     hash: bool | None = None
     init: bool = True
@@ -25,14 +35,10 @@ class Field(Generic[_T]):
     kw_only: bool = False
     # extra
     frozen: bool = False
-    native_field: Any | None = dataclasses.field(
-        default=None, compare=False, hash=False
-    )
-
-    MISSING: ClassVar[dataclasses._MISSING_TYPE] = dataclasses.MISSING
+    native_field: Any | None = dataclasses.field(default=None, compare=False)
 
 
-@dataclasses.dataclass
+@dataclasses.dataclass(**DC_KWARGS)
 class DataclassParams:
     init: bool = True
     repr: bool = True

@@ -2,7 +2,7 @@ import dataclasses
 from typing import Callable, List, NamedTuple, Optional
 
 import pytest
-from dataclass_compat import asdict, astuple, fields, params, replace
+from dataclass_compat import Field, asdict, astuple, fields, params, replace
 from dataclass_compat.adapters._named_tuple import is_named_tuple
 
 
@@ -141,10 +141,10 @@ def test_adapters(builder: Callable) -> None:
             None,
             0.0,
             False,
-            dataclasses.MISSING,
+            Field.MISSING,
         ]
         assert [f.default_factory for f in fields_] == [
-            *[dataclasses.MISSING] * 4,
+            *[Field.MISSING] * 4,
             list,
         ]
 

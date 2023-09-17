@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import sys
-from dataclasses import MISSING
 from typing import TYPE_CHECKING, Any, overload
 
 from dataclass_compat._types import DataclassParams, Field
@@ -57,9 +56,11 @@ def fields(class_or_instance: Any | type) -> tuple:
         Field(
             name=f.name,
             type=f.type,
-            default=(MISSING if f.default is msgspec.NODEFAULT else f.default),
+            default=(Field.MISSING if f.default is msgspec.NODEFAULT else f.default),
             default_factory=(
-                MISSING if f.default_factory is msgspec.NODEFAULT else f.default_factory
+                Field.MISSING
+                if f.default_factory is msgspec.NODEFAULT
+                else f.default_factory
             ),
             native_field=f,
         )

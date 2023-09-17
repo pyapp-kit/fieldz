@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import sys
-from dataclasses import MISSING
 from typing import TYPE_CHECKING, Any, ClassVar, Protocol, cast, overload
 
 from dataclass_compat._types import DataclassParams, Field
@@ -64,10 +63,10 @@ def fields(class_or_instance: Any | type) -> tuple[Field, ...]:
     fields: list[Field] = []
     for f in attrs.fields(cls):
         f = cast(attrs.Attribute, f)
-        default = MISSING if f.default is attrs.NOTHING else f.default
-        default_factory = MISSING
+        default = Field.MISSING if f.default is attrs.NOTHING else f.default
+        default_factory = Field.MISSING
         if isinstance(default, attrs.Factory):  # type: ignore [arg-type]
-            default_factory, default = default.factory, MISSING
+            default_factory, default = default.factory, Field.MISSING
         fields.append(
             Field(
                 name=f.name,
