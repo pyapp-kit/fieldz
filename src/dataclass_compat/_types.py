@@ -27,7 +27,9 @@ class Field(Generic[_T]):
     kw_only: bool = False
     # extra
     frozen: bool = False
-    native_field: Any | None = None
+    native_field: Any | None = dataclasses.field(
+        default=None, compare=False, hash=False
+    )
 
 
 @dataclasses.dataclass

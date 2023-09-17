@@ -8,15 +8,15 @@ except PackageNotFoundError:
     __version__ = "uninstalled"
 
 __all__ = [
-    "Field",
-    "DataclassParams",
-    "fields",
+    "Adapter",
     "asdict",
     "astuple",
-    "replace",
-    "params",
-    "Adapter",
+    "DataclassParams",
+    "Field",
+    "fields",
     "get_adapter",
+    "params",
+    "replace",
 ]
 
 from ._functions import asdict, astuple, fields, get_adapter, params, replace

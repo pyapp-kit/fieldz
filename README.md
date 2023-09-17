@@ -59,6 +59,7 @@ class SomeMsgspecStruct(msgspec.Struct):
 ```
 
 etc...
+
 ## Unified API
 
 These are all awesome libraries, and each has its own strengths and weaknesses.
@@ -109,6 +110,7 @@ assert (
 ### Supported libraries
 
 - [x] [`dataclasses`](https://docs.python.org/3/library/dataclasses.html)
+- [x] [`collections.namedtuple`](https://docs.python.org/3/library/collections.html#collections.namedtuple)
 - [x] [`pydantic`](https://docs.pydantic.dev/latest/)
 - [x] [`attrs`](https://www.attrs.org/en/stable/overview.html)
 - [x] [`msgspec`](https://jcristharif.com/msgspec/)
