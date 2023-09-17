@@ -71,21 +71,27 @@ a dictionary.
 extending the API from `dataclasses` when possible).
 
 ```python
+def fields(obj: Any) -> tuple[Field, ...]:
+    """Return a tuple of dataclass_compat.Field objects for the object."""
+
+def replace(obj: Any, /, **changes: Any) -> Any:
+    """Return a copy of obj with the specified changes."""
+
 def asdict(obj: Any) -> dict[str, Any]:
     """Return a dict representation of obj."""
 
 def astuple(obj: Any) -> tuple[Any, ...]:
     """Return a tuple representation of obj."""
 
-def replace(obj: Any, /, **changes: Any) -> Any:
-    """Return a copy of obj with the specified changes."""
-
-def fields(obj: Any | type[Any]) -> tuple[Field, ...]:
-    """Return a tuple of fields for the class or instance."""
-
 def params(obj: Any) -> DataclassParams:
     """Return parameters used to define the dataclass."""
 ```
+
+The `dataclass_compat.Field` and `dataclass_compat.DataclassParam` objects are
+simple dataclasses that match the protocols of `dataclasses.Field` and the
+(private) `dataclasses._DataclassParams` objects, respectively. The field object
+also adds a `native_field` attribute that is the original field object from the
+underlying library.
 
 ### Example
 
