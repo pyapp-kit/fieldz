@@ -29,6 +29,8 @@ repos:
     hooks:
       - id: mypy
         files: "^src/"
-        # # you have to add the things you want to type check against here
-        # additional_dependencies:
-        #   - numpy
+        additional_dependencies:
+          - pydantic
+          - attrs
+          - dataclassy
+          - msgspec
