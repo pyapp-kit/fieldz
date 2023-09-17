@@ -52,8 +52,12 @@ python = ["3.8", "3.11"]
 
 [tool.hatch.envs.test.overrides]
 matrix.pydantic.extra-dependencies = [
-  {value = "pydantic<2", if = ["v1"]},
-  {value = "pydantic>=2", if = ["v2"]},
+    { value = "pydantic<2", if = [
+        "v1",
+    ] },
+    { value = "pydantic>=2", if = [
+        "v2",
+    ] },
 ]
 
 [tool.ruff]
@@ -120,7 +124,7 @@ exclude_lines = [
     "raise NotImplementedError()",
 ]
 [tool.coverage.run]
-source = ["src"]
+source = ["dataclass_compat"]
 
 # https://github.com/mgedmin/check-manifest#configuration
 # add files that you want check-manifest to explicitly ignore here
