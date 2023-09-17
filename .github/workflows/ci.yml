@@ -31,6 +31,7 @@ jobs:
       matrix:
         python-version: ["3.8", "3.9", "3.10", "3.11"]
         platform: [ubuntu-latest, macos-latest, windows-latest]
+        pydantic: ["pydantic", "pydantic<2"]
 
     steps:
       - uses: actions/checkout@v4
@@ -47,6 +48,7 @@ jobs:
           python -m pip install -U pip
           # if running a cron job, we add the --pre flag to test against pre-releases
           python -m pip install .[test] ${{ github.event_name == 'schedule' && '--pre' || ''  }}
+          python -m pip install ${{ matrix.pydantic }}
 
       - name: 🧪 Run Tests
         run: pytest --color=yes --cov --cov-report=xml --cov-report=term-missing

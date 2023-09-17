@@ -2,12 +2,13 @@ from __future__ import annotations
 
 import sys
 from dataclasses import MISSING
-from typing import TYPE_CHECKING, Any, TypeGuard, overload
+from typing import TYPE_CHECKING, Any, overload
 
 from dataclass_compat._types import DataclassParams, Field
 
 if TYPE_CHECKING:
     import msgspec
+    from typing_extensions import TypeGuard
 
 
 @overload

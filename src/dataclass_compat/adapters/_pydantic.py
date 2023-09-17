@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import sys
 from dataclasses import MISSING
-from typing import TYPE_CHECKING, Any, Callable, TypeGuard, overload
+from typing import TYPE_CHECKING, Any, Callable, overload
 
 from dataclass_compat._types import DataclassParams, Field
 
@@ -10,6 +10,7 @@ if TYPE_CHECKING:
     import dataclasses
 
     import pydantic
+    from typing_extensions import TypeGuard
 
 
 @overload
@@ -36,7 +37,7 @@ def asdict(obj: pydantic.BaseModel) -> dict[str, Any]:
     # sourcery skip: reintroduce-else
     if hasattr(obj, "model_dump"):
         return obj.model_dump()
-    return obj.dict()  # type: ignore
+    return obj.dict()
 
 
 def astuple(obj: pydantic.BaseModel) -> tuple[Any, ...]:
@@ -51,10 +52,10 @@ def replace(obj: pydantic.BaseModel, /, **changes: Any) -> Any:
 
 
 def fields(obj: pydantic.BaseModel | type[pydantic.BaseModel]) -> tuple[Field, ...]:
-    from pydantic_core import PydanticUndefined
-
     fields = []
     if hasattr(obj, "model_fields"):
+        from pydantic_core import PydanticUndefined
+
         for name, finfo in obj.model_fields.items():
             factory: Callable | dataclasses._MISSING_TYPE = (
                 finfo.default_factory if callable(finfo.default_factory) else MISSING
@@ -68,12 +69,24 @@ def fields(obj: pydantic.BaseModel | type[pydantic.BaseModel]) -> tuple[Field, .
             )
             fields.append(field)
     else:
-        for name, modelfield in obj.__fields__.items():
+        from pydantic.fields import Undefined  # type: ignore
+
+        for name, modelfield in obj.__fields__.items():  # type: ignore
+            factory = (
+                modelfield.default_factory
+                if callable(modelfield.default_factory)
+                else MISSING
+            )
+            default = (
+                MISSING
+                if (factory is not MISSING or modelfield.default is Undefined)
+                else modelfield.default
+            )
             field = Field(
                 name=name,
-                type=modelfield.outer_type_,
-                default=modelfield.default,
-                default_factory=modelfield.default_factory,
+                type=modelfield.outer_type_,  # type: ignore
+                default=default,
+                default_factory=factory,
             )
             fields.append(field)
 

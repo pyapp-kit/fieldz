@@ -2,12 +2,13 @@ from __future__ import annotations
 
 import sys
 from dataclasses import MISSING
-from typing import TYPE_CHECKING, Any, ClassVar, Protocol, TypeGuard, cast, overload
+from typing import TYPE_CHECKING, Any, ClassVar, Protocol, cast, overload
 
 from dataclass_compat._types import DataclassParams, Field
 
 if TYPE_CHECKING:
     import attrs
+    from typing_extensions import TypeGuard
 
     class AttrsInstance(Protocol):
         __attrs_attrs__: ClassVar[tuple[attrs.Attribute, ...]]
@@ -45,11 +46,11 @@ def astuple(obj: AttrsInstance) -> tuple[Any, ...]:
     return attrs.astuple(obj)
 
 
-def replace(obj: AttrsInstance, /, **changes: Any) -> Any:
+def replace(obj: AttrsInstance, /, **changes: Any) -> AttrsInstance:
     """Return a copy of obj with the specified changes."""
     import attrs
 
-    return attrs.evolve(obj, **changes)
+    return attrs.evolve(obj, **changes)  # type: ignore [misc]
 
 
 def fields(class_or_instance: Any | type) -> tuple[Field, ...]:

@@ -2,12 +2,12 @@ from __future__ import annotations
 
 import sys
 from dataclasses import MISSING
-from typing import TYPE_CHECKING, Any, ClassVar, Protocol, TypeGuard
+from typing import TYPE_CHECKING, Any, ClassVar, Protocol
 
 from dataclass_compat._types import DataclassParams, Field
 
 if TYPE_CHECKING:
-    from typing_extensions import TypedDict
+    from typing_extensions import TypedDict, TypeGuard
 
     class DataclassyParams(TypedDict):
         init: bool

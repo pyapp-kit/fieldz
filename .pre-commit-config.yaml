@@ -26,7 +26,7 @@ repos:
       - id: mypy
         files: "^src/"
         additional_dependencies:
-          - pydantic
+          - pydantic>=2
           - attrs
           - dataclassy
           - msgspec

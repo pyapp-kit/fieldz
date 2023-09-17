@@ -30,14 +30,32 @@ dependencies = []
 
 [project.optional-dependencies]
 # add dependencies used for testing here
-test = ["pytest", "pytest-cov", "attrs", "pydantic", "dataclassy", "msgspec"]
+test = ["pytest", "pytest-cov", "attrs", "dataclassy", "msgspec"]
 # add anything else you like to have in your dev environment here
-dev = ["black", "ipython", "mypy", "pdbpp", "rich", "ruff"]
+dev = ["black", "ipython", "mypy", "pdbpp", "rich", "ruff", "hatch"]
 
 [project.urls]
 homepage = "https://github.com/tlambert03/dataclass-compat"
 repository = "https://github.com/tlambert03/dataclass-compat"
 
+
+# these let you run tests across all backends easily with:
+# hatch run test:test
+[tool.hatch.envs.test]
+
+[tool.hatch.envs.test.scripts]
+test = "pytest"
+
+[[tool.hatch.envs.test.matrix]]
+pydantic = ["v1", "v2"]
+python = ["3.8", "3.11"]
+
+
+[tool.hatch.envs.test.overrides]
+matrix.pydantic.extra-dependencies = [
+  {value = "pydantic<2", if = ["v1"]},
+  {value = "pydantic>=2", if = ["v2"]},
+]
 
 [tool.ruff]
 line-length = 88

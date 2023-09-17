@@ -14,7 +14,7 @@ def _dataclassy_model() -> type:
         b: str = "b"
         c: float = 0.0
         d: bool = False
-        e: list[int] = []
+        e: list[int] = []  # noqa
 
     return Model
 
