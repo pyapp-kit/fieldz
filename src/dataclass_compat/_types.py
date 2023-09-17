@@ -10,6 +10,7 @@ _T = TypeVar("_T")
 class Field(Generic[_T]):
     name: str
     type: type[_T] | None = None
+    description: str | None = None
     default: _T | dataclasses._MISSING_TYPE = dataclasses.field(
         default_factory=lambda: dataclasses.MISSING
     )

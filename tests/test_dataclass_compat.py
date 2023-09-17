@@ -1,5 +1,5 @@
 import dataclasses
-from typing import Callable, List, NamedTuple
+from typing import Callable, List, NamedTuple, Optional
 
 import pytest
 from dataclass_compat import asdict, astuple, fields, params, replace
@@ -10,7 +10,7 @@ def _dataclass_model() -> type:
     @dataclasses.dataclass
     class Model:
         a: int = 0
-        b: str = "b"
+        b: Optional[str] = None
         c: float = 0.0
         d: bool = False
         e: List[int] = dataclasses.field(default_factory=list)
@@ -21,7 +21,7 @@ def _dataclass_model() -> type:
 def _named_tuple() -> type:
     class Model(NamedTuple):
         a: int = 0
-        b: str = "b"
+        b: Optional[str] = None
         c: float = 0.0
         d: bool = False
         e: List[int] = []  # noqa
@@ -34,7 +34,7 @@ def _pydantic_model() -> type:
 
     class Model(BaseModel):
         a: int = 0
-        b: str = "b"
+        b: Optional[str] = None
         c: float = 0.0
         d: bool = False
         e: List[int] = Field(default_factory=list)
@@ -48,7 +48,7 @@ def _sqlmodel() -> type:
 
     class Model(SQLModel):
         a: int = 0
-        b: str = "b"
+        b: Optional[str] = None
         c: float = 0.0
         d: bool = False
         e: List[int] = Field(default_factory=list)
@@ -62,7 +62,7 @@ def _attrs_model() -> type:
     @attr.define
     class Model:
         a: int = 0
-        b: str = "b"
+        b: Optional[str] = None
         c: float = 0.0
         d: bool = False
         e: List[int] = attr.field(default=attr.Factory(list))
@@ -75,7 +75,7 @@ def _msgspec_model() -> type:
 
     class Model(msgspec.Struct):
         a: int = 0
-        b: str = "b"
+        b: Optional[str] = None
         c: float = 0.0
         d: bool = False
         e: List[int] = msgspec.field(default_factory=list)
@@ -89,7 +89,7 @@ def _dataclassy_model() -> type:
     @dataclassy.dataclass
     class Model:
         a: int = 0
-        b: str = "b"
+        b: Optional[str] = None
         c: float = 0.0
         d: bool = False
         e: List[int] = []  # noqa
@@ -126,17 +126,23 @@ def _django_model() -> type:
 def test_adapters(builder: Callable) -> None:
     model = builder()
     obj = model()
-    assert asdict(obj) == {"a": 0, "b": "b", "c": 0.0, "d": False, "e": []}
-    assert astuple(obj) == (0, "b", 0.0, False, [])
+    assert asdict(obj) == {"a": 0, "b": None, "c": 0.0, "d": False, "e": []}
+    assert astuple(obj) == (0, None, 0.0, False, [])
     fields_ = fields(obj)
     assert [f.name for f in fields_] == ["a", "b", "c", "d", "e"]
-    assert [f.type for f in fields_] == [int, str, float, bool, List[int]]
+    assert [f.type for f in fields_] == [int, Optional[str], float, bool, List[int]]
     assert [f.frozen for f in fields_] == [False] * 5
     if is_named_tuple(obj):
-        assert [f.default for f in fields_] == [0, "b", 0.0, False, []]
+        assert [f.default for f in fields_] == [0, None, 0.0, False, []]
     else:
         # namedtuples don't have default_factory
-        assert [f.default for f in fields_] == [0, "b", 0.0, False, dataclasses.MISSING]
+        assert [f.default for f in fields_] == [
+            0,
+            None,
+            0.0,
+            False,
+            dataclasses.MISSING,
+        ]
         assert [f.default_factory for f in fields_] == [
             *[dataclasses.MISSING] * 4,
             list,

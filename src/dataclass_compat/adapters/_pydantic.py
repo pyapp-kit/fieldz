@@ -27,7 +27,11 @@ def is_pydantic_model(obj: Any) -> bool:
     """Return True if obj is a pydantic.BaseModel subclass or instance."""
     pydantic = sys.modules.get("pydantic", None)
     cls = obj if isinstance(obj, type) else type(obj)
-    return pydantic is not None and issubclass(cls, pydantic.BaseModel)
+    if pydantic is not None and issubclass(cls, pydantic.BaseModel):
+        return True
+    elif hasattr(cls, "__pydantic_model__") or hasattr(cls, "__pydantic_fields__"):
+        return True
+    return False
 
 
 is_instance = is_pydantic_model
@@ -53,6 +57,9 @@ def replace(obj: pydantic.BaseModel, /, **changes: Any) -> Any:
 
 def fields(obj: pydantic.BaseModel | type[pydantic.BaseModel]) -> tuple[Field, ...]:
     fields = []
+    if hasattr(obj, "__pydantic_model__"):
+        obj = obj.__pydantic_model__
+
     if hasattr(obj, "model_fields"):
         from pydantic_core import PydanticUndefined
 
@@ -72,12 +79,14 @@ def fields(obj: pydantic.BaseModel | type[pydantic.BaseModel]) -> tuple[Field, .
                 default=default,
                 default_factory=factory,
                 native_field=finfo,
+                description=finfo.description,
                 metadata=extra if isinstance(extra, dict) else {},
             )
             fields.append(field)
     else:
         from pydantic.fields import Undefined  # type: ignore
 
+        annotations = getattr(obj, "__annotations__", {})
         for name, modelfield in obj.__fields__.items():  # type: ignore
             factory = (
                 modelfield.default_factory
@@ -86,19 +95,22 @@ def fields(obj: pydantic.BaseModel | type[pydantic.BaseModel]) -> tuple[Field, .
             )
             default = (
                 MISSING
-                if (
-                    factory is not MISSING
-                    or modelfield.default in (Undefined, Ellipsis)
-                )
+                if factory is not MISSING or modelfield.default in (Undefined, Ellipsis)
                 else modelfield.default
             )
+            # backport from pydantic2
+            _extra_dict = modelfield.field_info.extra.copy()  # type: ignore
+            if "json_schema_extra" in _extra_dict:
+                _extra_dict.update(_extra_dict.pop("json_schema_extra"))
+
             field = Field(
                 name=name,
-                type=modelfield.outer_type_,  # type: ignore
+                type=annotations.get(name),  # rather than outer_type_
                 default=default,
                 default_factory=factory,
                 native_field=modelfield,
-                metadata=modelfield.field_info.extra,  # type: ignore
+                description=modelfield.field_info.description,  # type: ignore
+                metadata=_extra_dict,
             )
             fields.append(field)
 
