@@ -12,13 +12,15 @@ on:
     # run every week (for --pre release tests)
     - cron: "0 0 * * 0"
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   check-manifest:
-    # check-manifest is a tool that checks that all files in version control are
-    # included in the sdist (unless explicitly excluded)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - run: pipx run check-manifest
 
   test:
@@ -31,12 +33,7 @@ jobs:
         platform: [ubuntu-latest, macos-latest, windows-latest]
 
     steps:
-      - name: 🛑 Cancel Previous Runs
-        uses: styfle/cancel-workflow-action@0.11.0
-        with:
-          access_token: ${{ github.token }}
-
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: 🐍 Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v4
@@ -78,7 +75,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
