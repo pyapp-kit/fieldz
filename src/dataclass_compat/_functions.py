@@ -1,7 +1,11 @@
-from typing import Any
+from __future__ import annotations
 
-from ._types import DataclassParams, Field
+from typing import TYPE_CHECKING, Any
+
 from .adapters import ADAPTER_MODULES, Adapter
+
+if TYPE_CHECKING:
+    from ._types import DataclassParams, Field
 
 
 def asdict(obj: Any) -> dict[str, Any]:
