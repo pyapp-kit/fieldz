@@ -121,7 +121,7 @@ assert (
 - [x] [`attrs`](https://www.attrs.org/en/stable/overview.html)
 - [x] [`msgspec`](https://jcristharif.com/msgspec/)
 - [x] [`dataclassy`](https://github.com/biqqles/dataclassy)
-- [x] [`sqlmodel`](https://pyfields.readthedocs.io/en/latest/) (it's just pydantic)
+- [x] [`sqlmodel`](https://sqlmodel.tiangolo.com) (it's just pydantic)
 
 ... maybe someday?
 
