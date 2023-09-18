@@ -45,8 +45,8 @@ test = [
 dev = ["black", "ipython", "mypy", "pdbpp", "rich", "ruff", "hatch"]
 
 [project.urls]
-homepage = "https://github.com/tlambert03/dataclass-compat"
-repository = "https://github.com/tlambert03/dataclass-compat"
+homepage = "https://github.com/pyapp-kit/dataclass-compat"
+repository = "https://github.com/pyapp-kit/dataclass-compat"
 
 
 # these let you run tests across all backends easily with:
