@@ -1,12 +1,16 @@
+from __future__ import annotations
+
 from dataclasses import dataclass
+from typing import TYPE_CHECKING
 
 from dataclass_compat import fields
-from typing_extensions import Annotated
+
+if TYPE_CHECKING:
+    import annotated_types as at
+    from typing_extensions import Annotated
 
 
 def test_annotated_types() -> None:
-    import annotated_types as at
-
     @dataclass
     class MyClass:
         age: Annotated[int, at.Gt(18)]
