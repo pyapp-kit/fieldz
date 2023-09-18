@@ -18,7 +18,7 @@ def test_annotated_types() -> None:
         # factors: list[Annotated[str, at.Predicate(str.islower)]]
         unannotated: int = 0
 
-    fields_ = [f.parse_annotated() for f in fields(MyClass)]
+    fields_ = fields(MyClass)
     assert fields_[0].constraints.gt == 18
     assert fields_[1].constraints.ge == 0
     assert fields_[1].constraints.le == 10
@@ -43,7 +43,7 @@ def test_msgspec_constraints() -> None:
         even: Annotated[int, Meta(multiple_of=2)]
         my_list: Annotated[list[int], Meta(min_length=1, max_length=10)]
 
-    fields_ = [f.parse_annotated() for f in fields(MyClass)]
+    fields_ = fields(MyClass)
     assert fields_[0].constraints.gt == 18
     assert fields_[1].constraints.ge == 0
     assert fields_[1].constraints.le == 10

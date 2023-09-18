@@ -85,25 +85,20 @@ class Field(Generic[_T]):
     native_field: Any | None = dataclasses.field(default=None, compare=False)
     constraints: Constraints | None = None
 
-    # used internally
+    # populated during parse_annotated
     annotated_type: builtins.type[_T] | None = dataclasses.field(
         default=None, repr=False, compare=False
     )
-
-    @property
-    def is_annotated_type(self) -> bool:
-        """Whether the field is an Annotated type."""
-        return get_origin(self.type) is Annotated
 
     def parse_annotated(self) -> Self:
         """Extract info from Annotated type if present, and return new field.
 
         If `self.type` is not a `typing.Annotated` type, return self unchanged.
         """
-        if not self.is_annotated_type:
+        if not _is_annotated_type(self.type):
             return self
 
-        kwargs, constraints = _parse_annotated(self.type)
+        kwargs, constraints = _parse_annotated_hint(self.type)
 
         for key in ("default", "name"):
             if (val := getattr(self, key)) not in (Field.MISSING, None) and kwargs.get(
@@ -123,7 +118,7 @@ class Field(Generic[_T]):
         return dataclasses.replace(self, **kwargs)
 
 
-def _parse_annotated(hint: Any) -> tuple[dict, dict]:
+def _parse_annotated_hint(hint: Any) -> tuple[dict, dict]:
     """Convert an Annotated type to a dict of Field kwargs."""
     # hint should have been checked to be an Annotated[...] type
     origin, *metadata = get_args(hint)
@@ -131,7 +126,7 @@ def _parse_annotated(hint: Any) -> tuple[dict, dict]:
     constraints: dict[str, Any] = {}
 
     # deal with annotated_types
-    constraints.update(_parse_annotated_types(metadata))
+    constraints.update(_parse_annotatedtypes_meta(metadata))
 
     # deal with msgspec
     m_kwargs, m_constraints = _parse_msgspec_meta(metadata)
@@ -144,7 +139,7 @@ def _parse_annotated(hint: Any) -> tuple[dict, dict]:
     return kwargs, constraints
 
 
-def _parse_annotated_types(metadata: list[Any]) -> dict[str, Any]:
+def _parse_annotatedtypes_meta(metadata: list[Any]) -> dict[str, Any]:
     """Extract constraints from annotated_types metadata."""
     if TYPE_CHECKING:
         import annotated_types
@@ -209,3 +204,8 @@ def _parse_msgspec_meta(metadata: list[Any]) -> tuple[dict, dict]:
             )
 
     return field_kwargs, constraints
+
+
+def _is_annotated_type(hint: Any) -> bool:
+    """Whether the field is an Annotated type."""
+    return get_origin(hint) is Annotated
