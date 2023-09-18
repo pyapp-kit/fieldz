@@ -28,26 +28,21 @@ class _MISSING_TYPE(enum.Enum):
     MISSING = enum.auto()
 
 
-class Restrictions:
-    minimum: float | None = None
-    maximum: float | None = None
-    exclusive_minimum: float | None = None
-    exclusive_maximum: float | None = None
-    multiple_of: float | None = None
+class Constraints:
+    gt: int | float | None = None
+    ge: int | float | None = None
+    lt: int | float | None = None
+    le: int | float | None = None
+    multiple_of: int | float | None = None
     min_length: int | None = None  # for str
     max_length: int | None = None  # for str
+    max_digits: int | None = None  # for decimal
+    decimal_places: int | None = None  # for decimal
     pattern: str | None = None
-    # min_items: int | None = None  # for sequences
-    # max_items: int | None = None  # for sequences
-    # unique_items: bool | None = None  # i.e. set
-    # min_properties: int | None = None
-    # max_properties: int | None = None
-    # required: bool | None = None
-    enum: list[Any] | None = None
-    const: Any | None = None
-    # format: str | None = None
-    # nullable: bool | None = None
     deprecated: bool | None = None
+    timezone: bool | None = None
+    # enum: list[Any] | None = None
+    # const: Any | None = None
 
 
 @dataclasses.dataclass(**DC_KWARGS)
@@ -57,6 +52,7 @@ class Field(Generic[_T]):
     name: str
     type: type[_T] | None = None
     description: str | None = None
+    title: str | None = None
     default: _T | Literal[_MISSING_TYPE.MISSING] = MISSING
     default_factory: Callable[[], _T] | Literal[_MISSING_TYPE.MISSING] = MISSING
     repr: bool = True
@@ -68,7 +64,7 @@ class Field(Generic[_T]):
     # extra
     frozen: bool = False
     native_field: Any | None = dataclasses.field(default=None, compare=False)
-    restrictions: Restrictions | None = None
+    constraints: Constraints | None = None
 
 
 @dataclasses.dataclass(**DC_KWARGS)

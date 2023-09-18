@@ -49,7 +49,7 @@ def replace(obj: msgspec.Struct, /, **changes: Any) -> Any:
     return msgspec.structs.replace(obj, **changes)
 
 
-def fields(class_or_instance: Any | type) -> tuple:
+def fields(obj: msgspec.Struct | type[msgspec.Struct]) -> tuple:
     import msgspec
 
     return tuple(
@@ -64,15 +64,17 @@ def fields(class_or_instance: Any | type) -> tuple:
             ),
             native_field=f,
         )
-        for f in msgspec.structs.fields(class_or_instance)
+        for f in msgspec.structs.fields(obj)
     )
 
 
 def params(obj: msgspec.Struct) -> DataclassParams:
     """Return parameters used to define the dataclass."""
-    cfg = getattr(obj, "__struct_config__", None)
-    if cfg is not None:  # pragma: no cover
-        # this will be covered in msgspec > 0.13.1
-        frozen = bool(getattr(cfg, "frozen", False))
-        return DataclassParams(frozen=frozen)
-    return DataclassParams()  # pragma: no cover
+    cfg: msgspec.structs.StructConfig | None = getattr(obj, "__struct_config__", None)
+    if cfg is None:
+        return DataclassParams()  # pragma: no cover
+
+    # this will be covered in msgspec > 0.13.1
+    return DataclassParams(
+        frozen=cfg.frozen, eq=cfg.eq, order=cfg.order, init=True, repr=True
+    )
