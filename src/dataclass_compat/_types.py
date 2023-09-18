@@ -21,6 +21,8 @@ from typing import (
 if TYPE_CHECKING:
     import builtins
 
+    from typing_extensions import Self
+
 _T = TypeVar("_T")
 
 DC_KWARGS = {"frozen": True}
@@ -92,10 +94,10 @@ class Field(Generic[_T]):
         """Whether the field is an Annotated type."""
         return get_origin(self.type) is Annotated
 
-    def parse_annotated(self) -> Field[_T]:
+    def parse_annotated(self) -> Self:
         """Extract info from Annotated type if present, and return new field.
 
-        If self.type is not an Annotated type, return self.
+        If `self.type` is not a `typing.Annotated` type, return self unchanged.
         """
         if not self.is_annotated_type:
             return self
