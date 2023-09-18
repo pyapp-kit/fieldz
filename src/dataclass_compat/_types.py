@@ -138,39 +138,40 @@ def _parse_annotated_hint(hint: Any) -> tuple[dict, dict]:
     return kwargs, constraints
 
 
+# At the moment, all of our constraint names match msgspec.Meta attributes
+# (we are a superset of msgspec.Meta)
+CONSTRAINT_NAMES = {f.name for f in dataclasses.fields(Constraints)}
+FIELD_NAMES = {f.name for f in dataclasses.fields(Field)}
+
+
 def _parse_annotatedtypes_meta(metadata: list[Any]) -> dict[str, Any]:
     """Extract constraints from annotated_types metadata."""
     if TYPE_CHECKING:
-        import annotated_types
+        import annotated_types as at
     else:
-        annotated_types = sys.modules.get("annotated_types")
-        if annotated_types is None:
+        at = sys.modules.get("annotated_types")
+        if at is None:
             return {}  # pragma: no cover
 
     a_kwargs = {}
     for item in metadata:
         # annotated_types >= 0.3.0 is supported
-        if isinstance(item, annotated_types.BaseMetadata):
-            a_kwargs.update(dataclasses.asdict(item))  # type: ignore
-        elif isinstance(item, annotated_types.GroupedMetadata):
-            for i in item:
-                a_kwargs.update(dataclasses.asdict(i))  # type: ignore
-    # annotated types calls the value of a Predicate "func"
-    if "func" in a_kwargs:
-        a_kwargs["predicate"] = a_kwargs.pop("func")
+        if isinstance(item, (at.BaseMetadata, at.GroupedMetadata)):
+            try:
+                values = dataclasses.asdict(item)  # type: ignore
+            except TypeError:  # pragma: no cover
+                continue
+            a_kwargs.update({k: v for k, v in values.items() if k in CONSTRAINT_NAMES})
+            # annotated types calls the value of a Predicate "func"
+            if "func" in values:
+                a_kwargs["predicate"] = values["func"]
 
-    # these were changed in v0.4.0
-    if "min_inclusive" in a_kwargs:  # pragma: no cover
-        a_kwargs["min_length"] = a_kwargs.pop("min_inclusive")
-    if "max_exclusive" in a_kwargs:  # pragma: no cover
-        a_kwargs["max_length"] = a_kwargs.pop("max_exclusive") - 1
+            # these were changed in v0.4.0
+            if "min_inclusive" in values:  # pragma: no cover
+                a_kwargs["min_length"] = values["min_inclusive"]
+            if "max_exclusive" in values:  # pragma: no cover
+                a_kwargs["max_length"] = values["max_exclusive"] - 1
     return a_kwargs
-
-
-# At the moment, all of our constraint names match msgspec.Meta attributes
-# (we are a superset of msgspec.Meta)
-CONSTRAINT_NAMES = {f.name for f in dataclasses.fields(Constraints)}
-FIELD_NAMES = {f.name for f in dataclasses.fields(Field)}
 
 
 def _parse_msgspec_meta(metadata: list[Any]) -> tuple[dict, dict]:

@@ -1,13 +1,21 @@
 from __future__ import annotations
 
 import dataclasses
+import re
 import sys
 from typing import TYPE_CHECKING, Any, Iterator, overload
 
-from dataclass_compat._types import DataclassParams, Field
+from dataclass_compat._types import (
+    Constraints,
+    DataclassParams,
+    Field,
+    _is_annotated_type,
+    _parse_annotatedtypes_meta,
+)
 
 if TYPE_CHECKING:
     import pydantic
+    import pydantic.fields
     from typing_extensions import TypeGuard
 
 
@@ -89,7 +97,32 @@ def _fields_v1(obj: pydantic.BaseModel | type[pydantic.BaseModel]) -> Iterator[F
             native_field=modelfield,
             description=modelfield.field_info.description,  # type: ignore
             metadata=_extra_dict,
+            constraints=_constraints_v1(modelfield),
         )
+
+
+def _constraints_v1(modelfield: Any) -> Constraints | None:
+    kwargs = {}
+    # check if the type is a pydantic constrained type
+    for subt in modelfield.type_.__mro__:
+        if (subt.__module__ or "").startswith("pydantic.types"):
+            keys = (
+                "gt",
+                "ge",
+                "lt",
+                "le",
+                "multiple_of",
+                "max_digits",
+                "decimal_places",
+                "min_length",
+                "max_length",
+            )
+            kwargs.update({key: getattr(modelfield.type_, key, None) for key in keys})
+            if regex := getattr(modelfield.type_, "regex", None):
+                if isinstance(regex, re.Pattern):
+                    regex = regex.pattern
+                kwargs["pattern"] = regex
+    return Constraints(**kwargs) if kwargs else None
 
 
 def _fields_v2(obj: pydantic.BaseModel | type[pydantic.BaseModel]) -> Iterator[Field]:
@@ -100,6 +133,7 @@ def _fields_v2(obj: pydantic.BaseModel | type[pydantic.BaseModel]) -> Iterator[F
     else:
         _fields = obj.model_fields.items()
 
+    annotations = getattr(obj, "__annotations__", {})
     for name, finfo in _fields:
         factory = (
             finfo.default_factory if callable(finfo.default_factory) else Field.MISSING
@@ -110,6 +144,14 @@ def _fields_v2(obj: pydantic.BaseModel | type[pydantic.BaseModel]) -> Iterator[F
             else finfo.default
         )
         extra = finfo.json_schema_extra
+
+        annotated_type = annotations.get(name)
+        if not _is_annotated_type(annotated_type):
+            annotated_type = None
+
+        c = _parse_annotatedtypes_meta(finfo.metadata)
+        constraints = Constraints(**c) if c else None
+
         yield Field(
             name=name,
             type=finfo.annotation,
@@ -118,6 +160,8 @@ def _fields_v2(obj: pydantic.BaseModel | type[pydantic.BaseModel]) -> Iterator[F
             native_field=finfo,
             description=finfo.description,
             metadata=extra if isinstance(extra, dict) else {},
+            annotated_type=annotated_type,
+            constraints=constraints,
         )
 
 
