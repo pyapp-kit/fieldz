@@ -6,6 +6,10 @@ build-backend = "hatchling.build"
 [tool.hatch.version]
 source = "vcs"
 
+[tool.hatch.build.targets.wheel]
+only-include = ["src"]
+sources = ["src"]
+
 # https://peps.python.org/pep-0621/
 [project]
 name = "dataclass-compat"
@@ -77,8 +81,8 @@ select = [
     "D",    # pydocstyle
     "I",    # isort
     "UP",   # pyupgrade
-    "C",    # flake8-comprehensions
     "B",    # flake8-bugbear
+    "C4",   # flake8-comprehensions
     "A001", # flake8-builtins
     "RUF",  # ruff-specific rules
     "TCH",  # typecheck
