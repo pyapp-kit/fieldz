@@ -9,7 +9,7 @@ except TypeError:
     constr_ = constr(pattern=r"^[a-z]+$")  # type: ignore
 
 
-def test_pydantic_constraints():
+def test_pydantic_constraints() -> None:
     class M(BaseModel):
         a: int = Field(default=50, ge=42, le=100)
         b: Annotated[int, Field(ge=42, le=100)] = 50
