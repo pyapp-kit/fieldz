@@ -35,6 +35,7 @@ test = [
     "attrs",
     "dataclassy",
     "msgspec",
+    "pydantic",
     "annotated_types",
 ]
 dev = ["black", "ipython", "mypy", "pdbpp", "rich", "ruff", "hatch"]

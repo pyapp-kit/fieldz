@@ -1,13 +1,8 @@
-from __future__ import annotations
-
 from dataclasses import dataclass
-from typing import TYPE_CHECKING
 
+import annotated_types as at
 from dataclass_compat import fields
-
-if TYPE_CHECKING:
-    import annotated_types as at
-    from typing_extensions import Annotated
+from typing_extensions import Annotated
 
 
 def test_annotated_types() -> None:
