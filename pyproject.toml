@@ -30,7 +30,14 @@ dependencies = []
 
 [project.optional-dependencies]
 # add dependencies used for testing here
-test = ["pytest", "pytest-cov", "attrs", "dataclassy", "msgspec"]
+test = [
+    "pytest",
+    "pytest-cov",
+    "attrs",
+    "dataclassy",
+    "msgspec",
+    "annotated_types",
+]
 # add anything else you like to have in your dev environment here
 dev = ["black", "ipython", "mypy", "pdbpp", "rich", "ruff", "hatch"]
 
