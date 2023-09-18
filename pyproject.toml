@@ -22,16 +22,22 @@ classifiers = [
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
     "License :: OSI Approved :: BSD License",
     "Typing :: Typed",
 ]
-# add your package dependencies here
-dependencies = []
+dependencies = ["typing_extensions"]
 
 [project.optional-dependencies]
-# add dependencies used for testing here
-test = ["pytest", "pytest-cov", "attrs", "dataclassy", "msgspec"]
-# add anything else you like to have in your dev environment here
+test = [
+    "pytest",
+    "pytest-cov",
+    "attrs",
+    "dataclassy",
+    "msgspec",
+    "pydantic",
+    "annotated_types",
+]
 dev = ["black", "ipython", "mypy", "pdbpp", "rich", "ruff", "hatch"]
 
 [project.urls]

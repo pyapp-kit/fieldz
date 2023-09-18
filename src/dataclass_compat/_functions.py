@@ -23,9 +23,12 @@ def replace(obj: Any, /, **changes: Any) -> Any:
     return get_adapter(obj).replace(obj, **changes)
 
 
-def fields(obj: Any | type[Any]) -> tuple[Field, ...]:
+def fields(obj: Any | type[Any], *, parse_annotated: bool = True) -> tuple[Field, ...]:
     """Return a tuple of fields for the class or instance."""
-    return get_adapter(obj).fields(obj)
+    fields = get_adapter(obj).fields(obj)
+    if parse_annotated:
+        fields = tuple(field.parse_annotated() for field in fields)
+    return fields
 
 
 def params(obj: Any) -> DataclassParams:
