@@ -22,14 +22,13 @@ classifiers = [
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
     "License :: OSI Approved :: BSD License",
     "Typing :: Typed",
 ]
-# add your package dependencies here
 dependencies = []
 
 [project.optional-dependencies]
-# add dependencies used for testing here
 test = [
     "pytest",
     "pytest-cov",
@@ -38,7 +37,6 @@ test = [
     "msgspec",
     "annotated_types",
 ]
-# add anything else you like to have in your dev environment here
 dev = ["black", "ipython", "mypy", "pdbpp", "rich", "ruff", "hatch"]
 
 [project.urls]
@@ -59,12 +57,8 @@ python = ["3.8", "3.11"]
 
 [tool.hatch.envs.test.overrides]
 matrix.pydantic.extra-dependencies = [
-    { value = "pydantic<2", if = [
-        "v1",
-    ] },
-    { value = "pydantic>=2", if = [
-        "v2",
-    ] },
+    { value = "pydantic<2", if = ["v1",] },
+    { value = "pydantic>=2", if = ["v2",] },
 ]
 
 [tool.ruff]
