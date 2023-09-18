@@ -159,7 +159,7 @@ def _parse_annotatedtypes_meta(metadata: list[Any]) -> dict[str, Any]:
         if isinstance(item, (at.BaseMetadata, at.GroupedMetadata)):
             try:
                 values = dataclasses.asdict(item)  # type: ignore
-            except TypeError:
+            except TypeError:  # pragma: no cover
                 continue
             a_kwargs.update({k: v for k, v in values.items() if k in CONSTRAINT_NAMES})
             # annotated types calls the value of a Predicate "func"
