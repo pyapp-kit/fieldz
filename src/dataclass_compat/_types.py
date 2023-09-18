@@ -13,11 +13,10 @@ from typing import (
     Literal,
     Mapping,
     TypeVar,
-    get_args,
-    get_origin,
 )
 
-from typing_extensions import Annotated
+# python 3.8's `get_origin` is not Annotated-aware
+from typing_extensions import Annotated, get_args, get_origin
 
 if TYPE_CHECKING:
     import builtins
@@ -156,7 +155,6 @@ def _parse_annotatedtypes_meta(metadata: list[Any]) -> dict[str, Any]:
         elif isinstance(item, annotated_types.GroupedMetadata):
             for i in item:
                 a_kwargs.update(dataclasses.asdict(i))  # type: ignore
-
     # annotated types calls the value of a Predicate "func"
     if "func" in a_kwargs:
         a_kwargs["predicate"] = a_kwargs.pop("func")
