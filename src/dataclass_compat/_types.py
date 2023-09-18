@@ -6,7 +6,6 @@ import sys
 import warnings
 from typing import (
     TYPE_CHECKING,
-    Annotated,
     Any,
     Callable,
     ClassVar,
@@ -17,6 +16,8 @@ from typing import (
     get_args,
     get_origin,
 )
+
+from typing_extensions import Annotated
 
 if TYPE_CHECKING:
     import builtins
