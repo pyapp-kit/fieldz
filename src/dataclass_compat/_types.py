@@ -145,7 +145,7 @@ def _parse_annotatedtypes_meta(metadata: list[Any]) -> dict[str, Any]:
     else:
         annotated_types = sys.modules.get("annotated_types")
         if annotated_types is None:
-            return {}
+            return {}  # pragma: no cover
 
     a_kwargs = {}
     for item in metadata:
