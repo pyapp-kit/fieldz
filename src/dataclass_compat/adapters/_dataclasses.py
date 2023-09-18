@@ -72,4 +72,4 @@ def params(obj: Any) -> DataclassParams:
             unsafe_hash=params.unsafe_hash,
             frozen=params.frozen,
         )
-    return DataclassParams()
+    return DataclassParams()  # pragma: no cover

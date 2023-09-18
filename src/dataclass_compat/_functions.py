@@ -38,4 +38,4 @@ def get_adapter(obj: Any) -> Adapter:
     for mod in ADAPTER_MODULES:
         if mod.is_instance(obj):
             return mod
-    raise TypeError(f"Unsupported dataclass type: {type(obj)}")
+    raise TypeError(f"Unsupported dataclass type: {type(obj)}")  # pragma: no cover
