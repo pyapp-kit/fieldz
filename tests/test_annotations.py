@@ -1,7 +1,7 @@
 from dataclasses import dataclass
-from typing import Annotated
 
 from dataclass_compat import fields
+from typing_extensions import Annotated
 
 
 def test_annotated_types() -> None:
