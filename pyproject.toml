@@ -140,10 +140,4 @@ source = ["dataclass_compat"]
 # add files that you want check-manifest to explicitly ignore here
 # (files that are in the repo but shouldn't go in the package)
 [tool.check-manifest]
-ignore = [
-    ".github_changelog_generator",
-    ".pre-commit-config.yaml",
-    ".ruff_cache/**/*",
-    "setup.py",
-    "tests/**/*",
-]
+ignore = [".pre-commit-config.yaml", "tests/**/*"]
