@@ -157,20 +157,17 @@ def _parse_annotatedtypes_meta(metadata: list[Any]) -> dict[str, Any]:
     for item in metadata:
         # annotated_types >= 0.3.0 is supported
         if isinstance(item, (at.BaseMetadata, at.GroupedMetadata)):
-            try:
-                values = dataclasses.asdict(item)  # type: ignore
-            except TypeError:  # pragma: no cover
-                continue
-            a_kwargs.update({k: v for k, v in values.items() if k in CONSTRAINT_NAMES})
+            values = {k: getattr(item, k) for k in CONSTRAINT_NAMES if hasattr(item, k)}
+            a_kwargs.update(values)
             # annotated types calls the value of a Predicate "func"
-            if "func" in values:
-                a_kwargs["predicate"] = values["func"]
+            if hasattr(item, "func"):
+                a_kwargs["predicate"] = item.func
 
             # these were changed in v0.4.0
-            if "min_inclusive" in values:  # pragma: no cover
-                a_kwargs["min_length"] = values["min_inclusive"]
-            if "max_exclusive" in values:  # pragma: no cover
-                a_kwargs["max_length"] = values["max_exclusive"] - 1
+            if hasattr(item, "min_inclusive"):  # pragma: no cover
+                a_kwargs["min_length"] = item.min_inclusive
+            if hasattr(item, "max_exclusive"):  # pragma: no cover
+                a_kwargs["max_length"] = item.max_exclusive - 1
     return a_kwargs
 
 
