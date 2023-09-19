@@ -10,6 +10,7 @@ from typing import (
     Callable,
     ClassVar,
     Generic,
+    Iterable,
     Literal,
     Mapping,
     TypeVar,
@@ -17,6 +18,8 @@ from typing import (
 
 # python 3.8's `get_origin` is not Annotated-aware
 from typing_extensions import Annotated, get_args, get_origin
+
+from dataclass_compat._repr import PlainRepr
 
 if TYPE_CHECKING:
     import builtins
@@ -31,7 +34,10 @@ if sys.version_info >= (3, 10):
 
 
 class _MISSING_TYPE(enum.Enum):
-    MISSING = enum.auto()
+    MISSING = "MISSING"
+
+    def __repr__(self) -> str:
+        return self.value
 
 
 @dataclasses.dataclass(**DC_KWARGS)
@@ -58,9 +64,14 @@ class Constraints:
     pattern: str | None = None
     deprecated: bool | None = None
     tz: bool | None = None
+    predicate: Callable[[Any], bool] | None = None
     # enum: list[Any] | None = None
     # const: Any | None = None
-    predicate: Callable[[Any], bool] | None = None
+
+    def __rich_repr__(self) -> Iterable[tuple[str, Any]]:
+        for name, val in dataclasses.asdict(self).items():
+            if val is not None:
+                yield name, val
 
 
 @dataclasses.dataclass(**DC_KWARGS)
@@ -81,13 +92,26 @@ class Field(Generic[_T]):
     kw_only: bool = False
     # extra
     frozen: bool = False
-    native_field: Any | None = dataclasses.field(default=None, compare=False)
+    native_field: Any | None = dataclasses.field(
+        default=None, compare=False, repr=False
+    )
     constraints: Constraints | None = None
 
     # populated during parse_annotated
     annotated_type: builtins.type[_T] | None = dataclasses.field(
         default=None, repr=False, compare=False
     )
+
+    def __rich_repr__(self) -> Iterable[tuple[str, Any]]:
+        for f in dataclasses.fields(self):
+            if not f.repr:
+                continue
+            val = getattr(self, f.name)
+            if f.name == "type":
+                val = PlainRepr.for_type(val)
+            elif f.name in {"default_factory", "default"} and val is Field.MISSING:
+                continue
+            yield f.name, val
 
     def parse_annotated(self) -> Self:
         """Extract info from Annotated type if present, and return new field.
