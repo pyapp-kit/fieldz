@@ -17,16 +17,18 @@ def test_annotated_types() -> None:
         lower_name: Annotated[str, at.Predicate(str.islower)]
         # TODO: determine how to handle nested Annotated types
         # factors: List[Annotated[str, at.Predicate(str.islower)]]
+        with_tz: Annotated[str, at.Timezone(...)]
         unannotated: int = 0
 
-    fields_ = fields(MyClass)
-    assert fields_[0].constraints.gt == 18
-    assert fields_[1].constraints.ge == 0
-    assert fields_[1].constraints.le == 10
-    assert fields_[2].constraints.multiple_of == 2
-    assert fields_[3].constraints.min_length == 1
-    assert fields_[3].constraints.max_length == 10
-    assert fields_[4].constraints.predicate == str.islower
+    fields_ = {f.name: f for f in fields(MyClass)}
+    assert fields_["age"].constraints.gt == 18
+    assert fields_["span"].constraints.ge == 0
+    assert fields_["span"].constraints.le == 10
+    assert fields_["even"].constraints.multiple_of == 2
+    assert fields_["my_list"].constraints.min_length == 1
+    assert fields_["my_list"].constraints.max_length == 10
+    assert fields_["lower_name"].constraints.predicate == str.islower
+    assert fields_["lower_name"].constraints.predicate == str.islower
 
 
 def test_msgspec_constraints() -> None:
@@ -43,11 +45,17 @@ def test_msgspec_constraints() -> None:
         span: Annotated[float, Meta(ge=0, le=10)]
         even: Annotated[int, Meta(multiple_of=2)]
         my_list: Annotated[List[int], Meta(min_length=1, max_length=10)]
+        # msgspec puts title and description in the Meta object
+        with_title: Annotated[str, Meta(title="Title", description="Description")]
+        with_tz: Annotated[int, Meta(tz=True)]
 
-    fields_ = fields(MyClass)
-    assert fields_[0].constraints.gt == 18
-    assert fields_[1].constraints.ge == 0
-    assert fields_[1].constraints.le == 10
-    assert fields_[2].constraints.multiple_of == 2
-    assert fields_[3].constraints.min_length == 1
-    assert fields_[3].constraints.max_length == 10
+    fields_ = {f.name: f for f in fields(MyClass)}
+    assert fields_["age"].constraints.gt == 18
+    assert fields_["span"].constraints.ge == 0
+    assert fields_["span"].constraints.le == 10
+    assert fields_["even"].constraints.multiple_of == 2
+    assert fields_["my_list"].constraints.min_length == 1
+    assert fields_["my_list"].constraints.max_length == 10
+    assert fields_["with_title"].title == "Title"
+    assert fields_["with_title"].description == "Description"
+    assert fields_["with_tz"].constraints.tz is True
