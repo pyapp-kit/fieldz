@@ -3,10 +3,13 @@ from dataclass_compat import fields
 from pydantic import BaseModel, Field, conint, constr
 from typing_extensions import Annotated
 
+PATTERN = r"^[a-z]+$"
 try:
-    constr_ = constr(regex=r"^[a-z]+$")
-except TypeError:
-    constr_ = constr(pattern=r"^[a-z]+$")  # type: ignore
+    e_constr = constr(regex=r"^[a-z]+$")
+    f_field = Field(default="abc", regex=PATTERN)
+except TypeError:  # pydantic v2
+    e_constr = constr(pattern=r"^[a-z]+$")  # type: ignore
+    f_field = Field(default="abc", pattern=PATTERN)
 
 
 def test_pydantic_constraints() -> None:
@@ -15,12 +18,13 @@ def test_pydantic_constraints() -> None:
         b: Annotated[int, Field(ge=42, le=100)] = 50
         c: Annotated[int, at.Ge(42), at.Le(100)] = 50
         d: conint(ge=42, le=100) = 50  # type: ignore
-        e: constr_ = "abc"  # type: ignore
+        e: e_constr = "abc"  # type: ignore
+        f: str = f_field
 
     for f in fields(M):
         assert f.constraints
-        if f.name == "e":
-            assert f.constraints.pattern == r"^[a-z]+$"
+        if f.name in {"e", "f"}:
+            assert f.constraints.pattern == PATTERN
         else:
             assert f.constraints.ge == 42
             assert f.constraints.le == 100
