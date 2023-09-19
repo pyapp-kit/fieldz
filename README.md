@@ -126,7 +126,7 @@ assert (
 ... maybe someday?
 
 - [ ] [`pyfields`](https://smarie.github.io/python-pyfields/)
-- [ ] [`marshmallow`](https://docs.djangoproject.com/en/3.2/topics/db/models/)
+- [ ] [`marshmallow`](https://marshmallow.readthedocs.io/en/stable/quickstart.html)
 - [ ] [`sqlalchemy`](https://docs.sqlalchemy.org/en/20/orm/quickstart.html)
 - [ ] [`django`](https://docs.djangoproject.com/en/dev/topics/db/models/)
 - [ ] [`peewee`](http://docs.peewee-orm.com/en/latest/peewee/models.html#models)
