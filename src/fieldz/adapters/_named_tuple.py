@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, ClassVar
 
-from dataclass_compat._types import DataclassParams, Field
+from fieldz._types import DataclassParams, Field
 
 if TYPE_CHECKING:
     from typing import Iterable

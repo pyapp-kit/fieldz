@@ -5,7 +5,7 @@ import re
 import sys
 from typing import TYPE_CHECKING, Any, Iterator, overload
 
-from dataclass_compat._types import (
+from fieldz._types import (
     Constraints,
     DataclassParams,
     Field,

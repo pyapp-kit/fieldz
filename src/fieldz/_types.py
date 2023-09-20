@@ -19,7 +19,7 @@ from typing import (
 # python 3.8's `get_origin` is not Annotated-aware
 from typing_extensions import Annotated, get_args, get_origin
 
-from dataclass_compat._repr import PlainRepr
+from fieldz._repr import PlainRepr
 
 if TYPE_CHECKING:
     import builtins
@@ -229,3 +229,11 @@ def _parse_msgspec_meta(metadata: list[Any]) -> tuple[dict, dict]:
 def _is_annotated_type(hint: Any) -> bool:
     """Whether the field is an Annotated type."""
     return get_origin(hint) is Annotated
+
+
+def _is_classvar(a_type: Any) -> bool:
+    return a_type is ClassVar or get_origin(a_type) is ClassVar
+
+
+def _is_initvar(a_type: Any) -> bool:
+    return a_type is dataclasses.InitVar or type(a_type) is dataclasses.InitVar

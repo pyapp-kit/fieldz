@@ -1,10 +1,10 @@
-# dataclass-compat
+# fieldz
 
-[![License](https://img.shields.io/pypi/l/dataclass-compat.svg?color=green)](https://github.com/pyapp-kit/dataclass-compat/raw/main/LICENSE)
-[![PyPI](https://img.shields.io/pypi/v/dataclass-compat.svg?color=green)](https://pypi.org/project/dataclass-compat)
-[![Python Version](https://img.shields.io/pypi/pyversions/dataclass-compat.svg?color=green)](https://python.org)
-[![CI](https://github.com/pyapp-kit/dataclass-compat/actions/workflows/ci.yml/badge.svg)](https://github.com/pyapp-kit/dataclass-compat/actions/workflows/ci.yml)
-[![codecov](https://codecov.io/gh/pyapp-kit/dataclass-compat/branch/main/graph/badge.svg)](https://codecov.io/gh/pyapp-kit/dataclass-compat)
+[![License](https://img.shields.io/pypi/l/fieldz.svg?color=green)](https://github.com/pyapp-kit/fieldz/raw/main/LICENSE)
+[![PyPI](https://img.shields.io/pypi/v/fieldz.svg?color=green)](https://pypi.org/project/fieldz)
+[![Python Version](https://img.shields.io/pypi/pyversions/fieldz.svg?color=green)](https://python.org)
+[![CI](https://github.com/pyapp-kit/fieldz/actions/workflows/ci.yml/badge.svg)](https://github.com/pyapp-kit/fieldz/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/pyapp-kit/fieldz/branch/main/graph/badge.svg)](https://codecov.io/gh/pyapp-kit/fieldz)
 
 Unified API for working with multiple dataclass-like libraries
 
@@ -67,12 +67,12 @@ Sometimes, however, you just want to be able to query basic information about a
 dataclass-like object, such as getting field names or types, or converting it to
 a dictionary.
 
-`dataclass-compat` provides a unified API for these operations (following or
+`fieldz` provides a unified API for these operations (following or
 extending the API from `dataclasses` when possible).
 
 ```python
 def fields(obj: Any) -> tuple[Field, ...]:
-    """Return a tuple of dataclass_compat.Field objects for the object."""
+    """Return a tuple of fieldz.Field objects for the object."""
 
 def replace(obj: Any, /, **changes: Any) -> Any:
     """Return a copy of obj with the specified changes."""
@@ -87,7 +87,7 @@ def params(obj: Any) -> DataclassParams:
     """Return parameters used to define the dataclass."""
 ```
 
-The `dataclass_compat.Field` and `dataclass_compat.DataclassParam` objects are
+The `fieldz.Field` and `fieldz.DataclassParam` objects are
 simple dataclasses that match the protocols of `dataclasses.Field` and the
 (private) `dataclasses._DataclassParams` objects, respectively. The field object
 also adds a `native_field` attribute that is the original field object from the
@@ -96,7 +96,7 @@ underlying library.
 ### Example
 
 ```python
-from dataclass_compat import Field, fields
+from fieldz import Field, fields
 
 standardized_fields = (
     Field(name="a", type=int, default=0),

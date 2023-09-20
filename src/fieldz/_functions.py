@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
-from .adapters import ADAPTER_MODULES, Adapter
+from . import adapters
 
 if TYPE_CHECKING:
     from ._types import DataclassParams, Field
@@ -36,9 +36,21 @@ def params(obj: Any) -> DataclassParams:
     return get_adapter(obj).params(obj)
 
 
-def get_adapter(obj: Any) -> Adapter:
+# Order matters here. The first adapter to return True for is_instance will be used.
+ADAPTERS: tuple[adapters.Adapter, ...] = (
+    adapters._pydantic,
+    adapters._attrs,
+    adapters._msgspec,
+    adapters._dataclassy,
+    adapters._dataclasses,
+    adapters._named_tuple,
+    adapters._typed_dict,
+)
+
+
+def get_adapter(obj: Any) -> adapters.Adapter:
     """Return the module of the given object."""
-    for mod in ADAPTER_MODULES:
+    for mod in ADAPTERS:
         if mod.is_instance(obj):
             return mod
     raise TypeError(f"Unsupported dataclass type: {type(obj)}")  # pragma: no cover

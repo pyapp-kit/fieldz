@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from typing import List
 
 import annotated_types as at
-from dataclass_compat import fields
+from fieldz import fields
 from typing_extensions import Annotated
 
 

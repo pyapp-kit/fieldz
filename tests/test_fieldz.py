@@ -1,9 +1,9 @@
 import dataclasses
-from typing import Callable, List, NamedTuple, Optional
+from typing import Callable, List, NamedTuple, Optional, TypedDict
 
 import pytest
-from dataclass_compat import Field, asdict, astuple, fields, params, replace
-from dataclass_compat.adapters._named_tuple import is_named_tuple
+from fieldz import Field, asdict, astuple, fields, params, replace
+from fieldz.adapters._named_tuple import is_named_tuple
 
 
 def _dataclass_model() -> type:
@@ -173,3 +173,20 @@ def test_adapters(builder: Callable) -> None:
     assert p.init is True
     assert p.unsafe_hash is False
     assert p.frozen is False
+
+
+def test_typed_dict() -> None:
+    class Model(TypedDict):
+        a: int
+        b: Optional[str]
+        c: float
+        d: bool
+        e: List[int]
+
+    assert fields(Model) == (
+        Field(name="a", type=int),
+        Field(name="b", type=Optional[str]),
+        Field(name="c", type=float),
+        Field(name="d", type=bool),
+        Field(name="e", type=List[int]),
+    )
