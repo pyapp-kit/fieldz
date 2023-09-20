@@ -127,7 +127,7 @@ class Field(Generic[_T]):
             if (val := getattr(self, key)) not in (Field.MISSING, None) and kwargs.get(
                 key
             ) not in (Field.MISSING, None):
-                warnings.warn(
+                warnings.warn(  # pragma: no cover
                     f"Cannot set {key!r} in both type annotation and field. Overriding "
                     f"{key!r}={kwargs[key]!r} with {val!r}.",
                     stacklevel=2,

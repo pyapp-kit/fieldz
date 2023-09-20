@@ -46,11 +46,12 @@ class PlainRepr(str):
         return str(self)
 
     @classmethod
-    def for_type(cls, tp: Any) -> PlainRepr:
-        return PlainRepr(display_as_type(tp))
+    def for_type(cls, tp: Any, *, modern_union: bool = False) -> PlainRepr:
+        """Return a PlainRepr for a type."""
+        return PlainRepr(display_as_type(tp, modern_union=modern_union))
 
 
-def display_as_type(obj: Any, modern_union: bool = False) -> str:
+def display_as_type(obj: Any, *, modern_union: bool = False) -> str:
     """Pretty representation of a type.
 
     Should be as close as possible to the original type definition string.
@@ -79,5 +80,5 @@ def display_as_type(obj: Any, modern_union: bool = False) -> str:
         return f"{obj.__qualname__}[{argstr}]"
     elif isinstance(obj, type):
         return obj.__qualname__
-    else:
+    else:  # pragma: no cover
         return repr(obj).replace("typing.", "").replace("typing_extensions.", "")
