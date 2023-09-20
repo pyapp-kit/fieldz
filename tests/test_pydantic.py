@@ -1,5 +1,5 @@
 import annotated_types as at
-from dataclass_compat import fields
+from fieldz import fields
 from pydantic import BaseModel, Field, conint, constr
 from typing_extensions import Annotated
 

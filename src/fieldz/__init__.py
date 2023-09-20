@@ -3,7 +3,7 @@
 from importlib.metadata import PackageNotFoundError, version
 
 try:
-    __version__ = version("dataclass-compat")
+    __version__ = version("fieldz")
 except PackageNotFoundError:  # pragma: no cover
     __version__ = "uninstalled"
 

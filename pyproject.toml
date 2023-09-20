@@ -12,7 +12,7 @@ sources = ["src"]
 
 # https://peps.python.org/pep-0621/
 [project]
-name = "dataclass-compat"
+name = "fieldz"
 dynamic = ["version"]
 description = "Utilities for providing compatibility with many dataclass-like libraries"
 readme = "README.md"
@@ -45,8 +45,8 @@ test = [
 dev = ["black", "ipython", "mypy", "pdbpp", "rich", "ruff", "hatch"]
 
 [project.urls]
-homepage = "https://github.com/pyapp-kit/dataclass-compat"
-repository = "https://github.com/pyapp-kit/dataclass-compat"
+homepage = "https://github.com/pyapp-kit/fieldz"
+repository = "https://github.com/pyapp-kit/fieldz"
 
 
 # these let you run tests across all backends easily with:
@@ -134,7 +134,7 @@ exclude_lines = [
     "raise NotImplementedError()",
 ]
 [tool.coverage.run]
-source = ["dataclass_compat"]
+source = ["fieldz"]
 
 # https://github.com/mgedmin/check-manifest#configuration
 # add files that you want check-manifest to explicitly ignore here

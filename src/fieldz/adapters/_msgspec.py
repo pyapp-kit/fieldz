@@ -3,7 +3,7 @@ from __future__ import annotations
 import sys
 from typing import TYPE_CHECKING, Any, overload
 
-from dataclass_compat._types import DataclassParams, Field
+from fieldz._types import DataclassParams, Field
 
 if TYPE_CHECKING:
     import msgspec

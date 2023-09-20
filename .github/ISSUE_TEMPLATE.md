@@ -1,4 +1,4 @@
-* dataclass-compat version:
+* fieldz version:
 * Python version:
 * Operating System:
 

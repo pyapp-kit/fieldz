@@ -5,8 +5,8 @@ author_email: talley.lambert@gmail.com
 author_name: Talley Lambert
 github_username: pyapp-kit
 mode: tooling
-module_name: dataclass_compat
-project_name: dataclass-compat
+module_name: fieldz
+project_name: fieldz
 project_short_description: Utilities for providing compatibility with many dataclass-like
     libraries
 
