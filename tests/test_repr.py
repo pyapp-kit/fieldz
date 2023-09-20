@@ -30,9 +30,10 @@ def test_PlainRepr() -> None:
 
     assert PlainRepr.for_type(func) == "func"
     assert PlainRepr.for_type(Foo()) == "Foo"
-    assert PlainRepr.for_type(ParamFoo[int]) == "ParamFoo[int]"
-    assert PlainRepr.for_type(Annotated[int, Foo()]) == "Annotated[int, Foo]"
+    # in python <=3.9 the module appears to be in the qualname for Parametrized generics
+    assert "ParamFoo[int]" in PlainRepr.for_type(ParamFoo[int])
     assert PlainRepr.for_type(Any) == "Any"
+    assert PlainRepr.for_type(Annotated[int, None]) == "Annotated[int, None]"
 
 
 def test_rich_reprs() -> None:
