@@ -32,7 +32,7 @@ else:
     def origin_is_union(tp: type[Any] | None) -> bool:
         return tp is typing.Union or tp is types.UnionType  # type: ignore
 
-    WithArgsTypes = (typing._GenericAlias, types.GenericAlias, types.UnionType)  # type: ignore[attr-defined]  # noqa: E501
+    WithArgsTypes = (typing._GenericAlias, types.GenericAlias, types.UnionType)  # type: ignore[attr-defined]
 
 
 class PlainRepr(str):
