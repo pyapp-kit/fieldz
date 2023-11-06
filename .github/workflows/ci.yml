@@ -2,15 +2,12 @@ name: CI
 
 on:
   push:
-    branches:
-      - main
-    tags:
-      - "v*"
+    branches: [main]
+    tags: [v*]
   pull_request:
   workflow_dispatch:
   schedule:
-    # run every week (for --pre release tests)
-    - cron: "0 0 * * 0"
+    - cron: "0 0 * * *" # run daily
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -24,12 +21,13 @@ jobs:
       - run: pipx run check-manifest
 
   test:
-    uses: pyapp-kit/workflows/.github/workflows/test-pyrepo.yml@main
+    uses: pyapp-kit/workflows/.github/workflows/test-pyrepo.yml@v1
     with:
       os: ${{ matrix.os }}
       python-version: ${{ matrix.python-version }}
-      pip-force-installs: ${{ matrix.pydantic }}
-      pip-install-flags: ${{ github.event_name == 'schedule' && '--pre' || ''  }}
+      pip-post-installs: ${{ matrix.pydantic }}
+      pip-install-pre-release: ${{ github.event_name == 'schedule' }}
+      report-failures: ${{ github.event_name == 'schedule' }}
     strategy:
       fail-fast: false
       matrix:
