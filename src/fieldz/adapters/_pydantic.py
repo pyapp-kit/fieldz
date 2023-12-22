@@ -61,7 +61,7 @@ def astuple(obj: pydantic.BaseModel) -> tuple[Any, ...]:
 def replace(obj: pydantic.BaseModel, /, **changes: Any) -> Any:
     """Return a copy of obj with the specified changes."""
     if hasattr(obj, "__dataclass_params__"):
-        return dataclasses.replace(obj, **changes)  # type: ignore
+        return dataclasses.replace(obj, **changes)
 
     if hasattr(obj, "model_copy"):
         return obj.model_copy(update=changes)
