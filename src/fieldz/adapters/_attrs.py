@@ -61,7 +61,7 @@ def fields(class_or_instance: Any | type) -> tuple[Field, ...]:
         else type(class_or_instance)
     )
     fields: list[Field] = []
-    for f in attrs.fields(cls):  # type: ignore [misc]
+    for f in attrs.fields(cls):
         f = cast(attrs.Attribute, f)
         default = Field.MISSING if f.default is attrs.NOTHING else f.default
         default_factory = Field.MISSING
