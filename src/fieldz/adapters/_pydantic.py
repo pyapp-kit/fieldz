@@ -20,13 +20,11 @@ if TYPE_CHECKING:
 
 
 @overload
-def is_pydantic_model(obj: type) -> TypeGuard[type[pydantic.BaseModel]]:
-    ...
+def is_pydantic_model(obj: type) -> TypeGuard[type[pydantic.BaseModel]]: ...
 
 
 @overload
-def is_pydantic_model(obj: object) -> TypeGuard[pydantic.BaseModel]:
-    ...
+def is_pydantic_model(obj: object) -> TypeGuard[pydantic.BaseModel]: ...
 
 
 def is_pydantic_model(obj: Any) -> bool:

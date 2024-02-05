@@ -1,4 +1,5 @@
 """Adapter modules for fieldz."""
+
 from . import (
     _attrs,
     _dataclasses,

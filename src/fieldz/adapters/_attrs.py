@@ -14,13 +14,11 @@ if TYPE_CHECKING:
 
 
 @overload
-def is_attrs_class(obj: type) -> TypeGuard[type[AttrsInstance]]:
-    ...
+def is_attrs_class(obj: type) -> TypeGuard[type[AttrsInstance]]: ...
 
 
 @overload
-def is_attrs_class(obj: object) -> TypeGuard[AttrsInstance]:
-    ...
+def is_attrs_class(obj: object) -> TypeGuard[AttrsInstance]: ...
 
 
 def is_attrs_class(obj: object) -> bool:
