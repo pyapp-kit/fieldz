@@ -11,13 +11,11 @@ if TYPE_CHECKING:
 
 
 @overload
-def is_msgspec_struct(obj: type) -> TypeGuard[type[msgspec.Struct]]:
-    ...
+def is_msgspec_struct(obj: type) -> TypeGuard[type[msgspec.Struct]]: ...
 
 
 @overload
-def is_msgspec_struct(obj: object) -> TypeGuard[msgspec.Struct]:
-    ...
+def is_msgspec_struct(obj: object) -> TypeGuard[msgspec.Struct]: ...
 
 
 def is_msgspec_struct(obj: Any) -> bool:
