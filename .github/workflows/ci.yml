@@ -26,10 +26,7 @@ jobs:
       os: ${{ matrix.os }}
       python-version: ${{ matrix.python-version }}
       pip-post-installs: ${{ matrix.pydantic }}
-      pip-install-flags: -e
       pip-install-pre-release: ${{ github.event_name == 'schedule' }}
-      report-failures: ${{ github.event_name == 'schedule' }}
-      coverage-upload: artifact
     strategy:
       fail-fast: false
       matrix:
