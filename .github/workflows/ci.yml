@@ -34,11 +34,11 @@ jobs:
         os: [ubuntu-latest, macos-latest, windows-latest]
         pydantic: ["pydantic", "'pydantic<2'"]
 
-  upload_coverage:
-    if: always() # always run this job
-    needs: [test]
-    uses: pyapp-kit/workflows/.github/workflows/upload-coverage.yml@v2
-    secrets: inherit
+  # upload_coverage:
+  #   if: always() # always run this job
+  #   needs: [test]
+  #   uses: pyapp-kit/workflows/.github/workflows/upload-coverage.yml@v2
+  #   secrets: inherit
 
   deploy:
     name: Deploy
