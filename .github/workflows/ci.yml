@@ -26,6 +26,7 @@ jobs:
       os: ${{ matrix.os }}
       python-version: ${{ matrix.python-version }}
       pip-post-installs: ${{ matrix.pydantic }}
+      pip-install-flags: -e
       pip-install-pre-release: ${{ github.event_name == 'schedule' }}
       report-failures: ${{ github.event_name == 'schedule' }}
       coverage-upload: artifact
@@ -39,7 +40,7 @@ jobs:
   upload_coverage:
     if: always() # always run this job
     needs: [test]
-    uses: pyapp-kit/workflows/.github/workflows/upload-coverage.yml@v2
+    uses: pyapp-kit/workflows/.github/workflows/upload-coverage.yml@
     secrets: inherit
 
   deploy:
