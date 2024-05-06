@@ -43,7 +43,7 @@ jobs:
             pydantic: "pydantic"
 
   upload_coverage:
-    if: always() # always run this job
+    if: always()
     needs: [test]
     uses: pyapp-kit/workflows/.github/workflows/upload-coverage.yml@v2
     secrets: inherit
