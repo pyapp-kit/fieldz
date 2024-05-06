@@ -21,7 +21,7 @@ jobs:
       - run: pipx run check-manifest
 
   test:
-    uses: pyapp-kit/workflows/.github/workflows/test-pyrepo.yml@main
+    uses: pyapp-kit/workflows/.github/workflows/test-pyrepo.yml@v2
     with:
       os: ${{ matrix.os }}
       python-version: ${{ matrix.python-version }}
@@ -39,7 +39,7 @@ jobs:
   upload_coverage:
     if: always() # always run this job
     needs: [test]
-    uses: pyapp-kit/workflows/.github/workflows/upload-coverage.yml@main
+    uses: pyapp-kit/workflows/.github/workflows/upload-coverage.yml@v2
     secrets: inherit
 
   deploy:
