@@ -1,9 +1,10 @@
 import dataclasses
-from typing import Callable, List, NamedTuple, Optional, TypedDict, Any
+from typing import Any, Callable, List, NamedTuple, Optional, TypedDict
 
 import pytest
 from fieldz import Field, asdict, astuple, fields, params, replace
 from fieldz.adapters._named_tuple import is_named_tuple
+
 
 def _dataclass_model() -> type:
     @dataclasses.dataclass
@@ -29,6 +30,7 @@ def _named_tuple() -> type:
 
     return Model
 
+
 def _pydantic_v1_model() -> type:
     from pydantic.v1 import BaseModel, Field
 
@@ -41,6 +43,7 @@ def _pydantic_v1_model() -> type:
         f: Any = tuple()
 
     return Model
+
 
 def _pydantic_model() -> type:
     from pydantic import BaseModel, Field
@@ -162,11 +165,25 @@ def _django_model() -> type:
 def test_adapters(builder: Callable) -> None:
     model = builder()
     obj = model()
-    assert asdict(obj) == {"a": 0, "b": None, "c": 0.0, "d": False, "e": [], "f": tuple()}
+    assert asdict(obj) == {
+        "a": 0,
+        "b": None,
+        "c": 0.0,
+        "d": False,
+        "e": [],
+        "f": tuple(),
+    }
     assert astuple(obj) == (0, None, 0.0, False, [], tuple())
     fields_ = fields(obj)
     assert [f.name for f in fields_] == ["a", "b", "c", "d", "e", "f"]
-    assert [f.type for f in fields_] == [int, Optional[str], float, bool, List[int], Any]
+    assert [f.type for f in fields_] == [
+        int,
+        Optional[str],
+        float,
+        bool,
+        List[int],
+        Any,
+    ]
     assert [f.frozen for f in fields_] == [False] * 6
     if is_named_tuple(obj):
         assert [f.default for f in fields_] == [0, None, 0.0, False, [], tuple()]
@@ -178,16 +195,23 @@ def test_adapters(builder: Callable) -> None:
             0.0,
             False,
             Field.MISSING,
-            tuple()
+            tuple(),
         ]
         assert [f.default_factory for f in fields_] == [
             *[Field.MISSING] * 4,
             list,
-            Field.MISSING
+            Field.MISSING,
         ]
 
     obj2 = replace(obj, a=1, b="b2", c=1.0, d=True, e=[1, 2, 3], f=dict())
-    assert asdict(obj2) == {"a": 1, "b": "b2", "c": 1.0, "d": True, "e": [1, 2, 3], "f": dict()}
+    assert asdict(obj2) == {
+        "a": 1,
+        "b": "b2",
+        "c": 1.0,
+        "d": True,
+        "e": [1, 2, 3],
+        "f": dict(),
+    }
 
     p = params(obj)
     assert p.eq is True
