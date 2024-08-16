@@ -3,9 +3,7 @@ from __future__ import annotations
 import dataclasses
 import re
 import sys
-from typing import TYPE_CHECKING, Any, Iterator, overload
-
-import pydantic.v1 as pydantic_v1
+from typing import TYPE_CHECKING, Any, Iterator, cast, overload
 
 from fieldz._types import (
     Constraints,
@@ -18,6 +16,7 @@ from fieldz._types import (
 if TYPE_CHECKING:
     import pydantic
     import pydantic.fields
+    from pydantic.v1 import BaseModel as PydanticV1BaseModel
     from typing_extensions import TypeGuard
 
 
@@ -41,16 +40,6 @@ def is_pydantic_model(obj: Any) -> bool:
     elif hasattr(cls, "__pydantic_model__") or hasattr(cls, "__pydantic_fields__"):
         return True
     return False
-
-
-@overload
-def is_pydantic_v1_model(obj: type) -> TypeGuard[type[pydantic_v1.BaseModel]]: ...
-@overload
-def is_pydantic_v1_model(obj: object) -> TypeGuard[pydantic_v1.BaseModel]: ...
-def is_pydantic_v1_model(obj: Any) -> bool:
-    return isinstance(obj, pydantic_v1.BaseModel) or issubclass(
-        obj, pydantic_v1.BaseModel
-    )
 
 
 is_instance = is_pydantic_model
@@ -81,9 +70,7 @@ def replace(obj: pydantic.BaseModel, /, **changes: Any) -> Any:
     return obj.copy(update=changes)
 
 
-def _fields_v1(
-    obj: pydantic_v1.BaseModel | type[pydantic_v1.BaseModel],
-) -> Iterator[Field]:
+def _fields_v1(obj: PydanticV1BaseModel | type[PydanticV1BaseModel]) -> Iterator[Field]:
     try:
         from pydantic.v1.fields import Undefined
     except ImportError:
@@ -187,18 +174,17 @@ def _fields_v2(obj: pydantic.BaseModel | type[pydantic.BaseModel]) -> Iterator[F
 
 def fields(
     obj: pydantic.BaseModel
+    | PydanticV1BaseModel
     | type[pydantic.BaseModel]
-    | pydantic_v1.BaseModel
-    | type[pydantic_v1.BaseModel],
+    | type[PydanticV1BaseModel],
 ) -> tuple[Field, ...]:
-    if is_pydantic_model(obj):
+    if hasattr(obj, "model_fields") or hasattr(obj, "__pydantic_fields__"):
+        obj = cast("pydantic.BaseModel | type[pydantic.BaseModel]", obj)
         return tuple(_fields_v2(obj))
-    elif hasattr(obj, "__pydantic_model__"):
+    if hasattr(obj, "__pydantic_model__"):
         obj = obj.__pydantic_model__  # v1 dataclass
-    if is_pydantic_v1_model(obj):
-        return tuple(_fields_v1(obj))
-    else:
-        raise Exception()
+    obj = cast("PydanticV1BaseModel | type[PydanticV1BaseModel]", obj)
+    return tuple(_fields_v1(obj))
 
 
 def params(obj: pydantic.BaseModel) -> DataclassParams:
