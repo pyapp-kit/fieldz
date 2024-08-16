@@ -5,6 +5,8 @@ import re
 import sys
 from typing import TYPE_CHECKING, Any, Iterator, overload
 
+import pydantic.v1 as pydantic_v1
+
 from fieldz._types import (
     Constraints,
     DataclassParams,
@@ -41,6 +43,16 @@ def is_pydantic_model(obj: Any) -> bool:
     return False
 
 
+@overload
+def is_pydantic_v1_model(obj: type) -> TypeGuard[type[pydantic_v1.BaseModel]]: ...
+@overload
+def is_pydantic_v1_model(obj: object) -> TypeGuard[pydantic_v1.BaseModel]: ...
+def is_pydantic_v1_model(obj: Any) -> bool:
+    return isinstance(obj, pydantic_v1.BaseModel) or issubclass(
+        obj, pydantic_v1.BaseModel
+    )
+
+
 is_instance = is_pydantic_model
 
 
@@ -69,14 +81,16 @@ def replace(obj: pydantic.BaseModel, /, **changes: Any) -> Any:
     return obj.copy(update=changes)
 
 
-def _fields_v1(obj: pydantic.BaseModel | type[pydantic.BaseModel]) -> Iterator[Field]:
+def _fields_v1(
+    obj: pydantic_v1.BaseModel | type[pydantic_v1.BaseModel],
+) -> Iterator[Field]:
     try:
         from pydantic.v1.fields import Undefined
     except ImportError:
         from pydantic.fields import Undefined  # type: ignore
 
     annotations = {key: field.annotation for key, field in obj.__fields__.items()}
-    for name, modelfield in obj.__fields__.items():  # type: ignore
+    for name, modelfield in obj.__fields__.items():
         factory = (
             modelfield.default_factory
             if callable(modelfield.default_factory)
@@ -89,7 +103,7 @@ def _fields_v1(obj: pydantic.BaseModel | type[pydantic.BaseModel]) -> Iterator[F
             else modelfield.default
         )
         # backport from pydantic2
-        _extra_dict = modelfield.field_info.extra.copy()  # type: ignore
+        _extra_dict = modelfield.field_info.extra.copy()
         if "json_schema_extra" in _extra_dict:
             _extra_dict.update(_extra_dict.pop("json_schema_extra"))
 
@@ -99,7 +113,7 @@ def _fields_v1(obj: pydantic.BaseModel | type[pydantic.BaseModel]) -> Iterator[F
             default=default,
             default_factory=(factory if callable(factory) else Field.MISSING),
             native_field=modelfield,
-            description=modelfield.field_info.description,  # type: ignore
+            description=modelfield.field_info.description,
             metadata=_extra_dict,
             constraints=_constraints_v1(modelfield),
         )
@@ -171,12 +185,20 @@ def _fields_v2(obj: pydantic.BaseModel | type[pydantic.BaseModel]) -> Iterator[F
         )
 
 
-def fields(obj: pydantic.BaseModel | type[pydantic.BaseModel]) -> tuple[Field, ...]:
-    if hasattr(obj, "model_fields") or hasattr(obj, "__pydantic_fields__"):
+def fields(
+    obj: pydantic.BaseModel
+    | type[pydantic.BaseModel]
+    | pydantic_v1.BaseModel
+    | type[pydantic_v1.BaseModel],
+) -> tuple[Field, ...]:
+    if is_pydantic_model(obj):
         return tuple(_fields_v2(obj))
-    if hasattr(obj, "__pydantic_model__"):
+    elif hasattr(obj, "__pydantic_model__"):
         obj = obj.__pydantic_model__  # v1 dataclass
-    return tuple(_fields_v1(obj))
+    if is_pydantic_v1_model(obj):
+        return tuple(_fields_v1(obj))
+    else:
+        raise Exception()
 
 
 def params(obj: pydantic.BaseModel) -> DataclassParams:
