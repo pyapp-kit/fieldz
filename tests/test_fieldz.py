@@ -30,6 +30,18 @@ def _named_tuple() -> type:
 
     return Model
 
+def _pydantic_v1_model_str() -> type:
+    from pydantic.v1 import BaseModel, Field
+
+    class Model(BaseModel):
+        a: "int" = 0
+        b: "Optional[str]" = None
+        c: "float" = 0.0
+        d: "bool" = False
+        e: "List[int]" = Field(default_factory=list)
+        f: "Any" = ()
+
+    return Model
 
 def _pydantic_v1_model() -> type:
     from pydantic.v1 import BaseModel, Field
@@ -155,6 +167,7 @@ def _django_model() -> type:
         _dataclassy_model,
         _pydantic_model,
         _pydantic_v1_model,
+        _pydantic_v1_model_str,
         _attrs_model,
         _msgspec_model,
         _sqlmodel,

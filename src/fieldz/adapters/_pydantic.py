@@ -75,7 +75,7 @@ def _fields_v1(obj: pydantic.BaseModel | type[pydantic.BaseModel]) -> Iterator[F
     except ImportError:
         from pydantic.fields import Undefined  # type: ignore
 
-    annotations = getattr(obj, "__annotations__", {})
+    annotations = {key: field.annotation for key, field in obj.__fields__.items()}
     for name, modelfield in obj.__fields__.items():  # type: ignore
         factory = (
             modelfield.default_factory
