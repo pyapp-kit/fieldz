@@ -1,7 +1,8 @@
 import annotated_types as at
-from fieldz import fields
 from pydantic import BaseModel, Field, conint, constr
 from typing_extensions import Annotated
+
+from fieldz import fields
 
 PATTERN = r"^[a-z]+$"
 try:

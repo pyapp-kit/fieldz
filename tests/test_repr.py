@@ -1,8 +1,9 @@
 from typing import Any, Generic, Optional, TypeVar, Union
 
+from typing_extensions import Annotated
+
 import fieldz
 from fieldz._repr import PlainRepr
-from typing_extensions import Annotated
 
 T = TypeVar("T")
 

@@ -2,8 +2,9 @@ from dataclasses import dataclass
 from typing import List
 
 import annotated_types as at
-from fieldz import fields
 from typing_extensions import Annotated
+
+from fieldz import fields
 
 
 def test_annotated_types() -> None:
