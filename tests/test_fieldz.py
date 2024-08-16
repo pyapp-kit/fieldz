@@ -2,6 +2,7 @@ import dataclasses
 from typing import Callable, List, NamedTuple, Optional, TypedDict
 
 import pytest
+
 from fieldz import Field, asdict, astuple, fields, params, replace
 from fieldz.adapters._named_tuple import is_named_tuple
 
