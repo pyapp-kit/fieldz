@@ -165,20 +165,8 @@ def _django_model() -> type:
 def test_adapters(builder: Callable) -> None:
     model = builder()
     obj = model()
-<<<<<<< HEAD
     assert asdict(obj) == {"a": 0, "b": None, "c": 0.0, "d": False, "e": [], "f": ()}
     assert astuple(obj) == (0, None, 0.0, False, [], ())
-=======
-    assert asdict(obj) == {
-        "a": 0,
-        "b": None,
-        "c": 0.0,
-        "d": False,
-        "e": [],
-        "f": tuple(),
-    }
-    assert astuple(obj) == (0, None, 0.0, False, [], tuple())
->>>>>>> 214743a3a168d48baa7f1d2551f26409684904ed
     fields_ = fields(obj)
     assert [f.name for f in fields_] == ["a", "b", "c", "d", "e", "f"]
     assert [f.type for f in fields_] == [
@@ -208,20 +196,8 @@ def test_adapters(builder: Callable) -> None:
             Field.MISSING,
         ]
 
-<<<<<<< HEAD
     obj2 = replace(obj, a=1, b="b2", c=1.0, d=True, e=[1, 2, 3], f={})
     assert asdict(obj2) == {"a": 1, "b": "b2", "c": 1.0, "d": True, "e": [1, 2, 3], "f": {}}
-=======
-    obj2 = replace(obj, a=1, b="b2", c=1.0, d=True, e=[1, 2, 3], f=dict())
-    assert asdict(obj2) == {
-        "a": 1,
-        "b": "b2",
-        "c": 1.0,
-        "d": True,
-        "e": [1, 2, 3],
-        "f": dict(),
-    }
->>>>>>> 214743a3a168d48baa7f1d2551f26409684904ed
 
     p = params(obj)
     assert p.eq is True
