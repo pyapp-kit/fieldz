@@ -30,6 +30,7 @@ def _named_tuple() -> type:
 
     return Model
 
+
 def _pydantic_v1_model_str() -> type:
     from pydantic.v1 import BaseModel, Field
 
@@ -42,6 +43,7 @@ def _pydantic_v1_model_str() -> type:
         f: "Any" = ()
 
     return Model
+
 
 def _pydantic_v1_model() -> type:
     from pydantic.v1 import BaseModel, Field
