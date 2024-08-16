@@ -30,8 +30,9 @@ def is_pydantic_model(obj: object) -> TypeGuard[pydantic.BaseModel]: ...
 def is_pydantic_model(obj: Any) -> bool:
     """Return True if obj is a pydantic.BaseModel subclass or instance."""
     pydantic = sys.modules.get("pydantic", None)
+    pydantic_v1 = sys.modules.get("pydantic.v1", None)
     cls = obj if isinstance(obj, type) else type(obj)
-    if pydantic is not None and issubclass(cls, pydantic.BaseModel):
+    if pydantic is not None and issubclass(cls, (pydantic.BaseModel, pydantic_v1.BaseModel)):
         return True
     elif hasattr(cls, "__pydantic_model__") or hasattr(cls, "__pydantic_fields__"):
         return True
@@ -67,7 +68,10 @@ def replace(obj: pydantic.BaseModel, /, **changes: Any) -> Any:
 
 
 def _fields_v1(obj: pydantic.BaseModel | type[pydantic.BaseModel]) -> Iterator[Field]:
-    from pydantic.fields import Undefined  # type: ignore
+    try:
+        from pydantic.v1.fields import Undefined
+    except ImportError:
+        from pydantic.fields import Undefined # type: ignore
 
     annotations = getattr(obj, "__annotations__", {})
     for name, modelfield in obj.__fields__.items():  # type: ignore

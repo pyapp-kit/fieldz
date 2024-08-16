@@ -1,10 +1,9 @@
 import dataclasses
-from typing import Callable, List, NamedTuple, Optional, TypedDict
+from typing import Callable, List, NamedTuple, Optional, TypedDict, Any
 
 import pytest
 from fieldz import Field, asdict, astuple, fields, params, replace
 from fieldz.adapters._named_tuple import is_named_tuple
-
 
 def _dataclass_model() -> type:
     @dataclasses.dataclass
@@ -14,6 +13,7 @@ def _dataclass_model() -> type:
         c: float = 0.0
         d: bool = False
         e: List[int] = dataclasses.field(default_factory=list)
+        f: Any = tuple()
 
     return Model
 
@@ -25,9 +25,22 @@ def _named_tuple() -> type:
         c: float = 0.0
         d: bool = False
         e: List[int] = []  # noqa
+        f: Any = tuple()
 
     return Model
 
+def _pydantic_v1_model() -> type:
+    from pydantic.v1 import BaseModel, Field
+
+    class Model(BaseModel):
+        a: int = 0
+        b: Optional[str] = None
+        c: float = 0.0
+        d: bool = False
+        e: List[int] = Field(default_factory=list)
+        f: Any = tuple()
+
+    return Model
 
 def _pydantic_model() -> type:
     from pydantic import BaseModel, Field
@@ -38,6 +51,7 @@ def _pydantic_model() -> type:
         c: float = 0.0
         d: bool = False
         e: List[int] = Field(default_factory=list)
+        f: Any = tuple()
 
     return Model
 
@@ -52,6 +66,7 @@ def _pydantic_dataclass() -> type:
         c: float = 0.0
         d: bool = False
         e: List[int] = dataclasses.field(default_factory=list)
+        f: Any = tuple()
 
     return Model
 
@@ -66,6 +81,7 @@ def _sqlmodel() -> type:
         c: float = 0.0
         d: bool = False
         e: List[int] = Field(default_factory=list)
+        f: Any = tuple()
 
     return Model
 
@@ -80,6 +96,7 @@ def _attrs_model() -> type:
         c: float = 0.0
         d: bool = False
         e: List[int] = attr.field(default=attr.Factory(list))
+        f: Any = tuple()
 
     return Model
 
@@ -93,6 +110,7 @@ def _msgspec_model() -> type:
         c: float = 0.0
         d: bool = False
         e: List[int] = msgspec.field(default_factory=list)
+        f: Any = tuple()
 
     return Model
 
@@ -107,6 +125,7 @@ def _dataclassy_model() -> type:
         c: float = 0.0
         d: bool = False
         e: List[int] = []  # noqa
+        f: Any = tuple()
 
     return Model
 
@@ -120,6 +139,7 @@ def _django_model() -> type:
         c: float = models.FloatField(default=0.0)
         d: bool = models.BooleanField(default=False)
         e: List[int] = models.JSONField(default=list)
+        f: Any = tuple()
 
     return Model
 
@@ -130,6 +150,7 @@ def _django_model() -> type:
         _dataclass_model,
         _named_tuple,
         _dataclassy_model,
+        _pydantic_v1_model,
         _pydantic_model,
         _attrs_model,
         _msgspec_model,
@@ -141,14 +162,14 @@ def _django_model() -> type:
 def test_adapters(builder: Callable) -> None:
     model = builder()
     obj = model()
-    assert asdict(obj) == {"a": 0, "b": None, "c": 0.0, "d": False, "e": []}
-    assert astuple(obj) == (0, None, 0.0, False, [])
+    assert asdict(obj) == {"a": 0, "b": None, "c": 0.0, "d": False, "e": [], "f": tuple()}
+    assert astuple(obj) == (0, None, 0.0, False, [], tuple())
     fields_ = fields(obj)
-    assert [f.name for f in fields_] == ["a", "b", "c", "d", "e"]
-    assert [f.type for f in fields_] == [int, Optional[str], float, bool, List[int]]
-    assert [f.frozen for f in fields_] == [False] * 5
+    assert [f.name for f in fields_] == ["a", "b", "c", "d", "e", "f"]
+    assert [f.type for f in fields_] == [int, Optional[str], float, bool, List[int], Any]
+    assert [f.frozen for f in fields_] == [False] * 6
     if is_named_tuple(obj):
-        assert [f.default for f in fields_] == [0, None, 0.0, False, []]
+        assert [f.default for f in fields_] == [0, None, 0.0, False, [], tuple()]
     else:
         # namedtuples don't have default_factory
         assert [f.default for f in fields_] == [
@@ -157,14 +178,16 @@ def test_adapters(builder: Callable) -> None:
             0.0,
             False,
             Field.MISSING,
+            tuple()
         ]
         assert [f.default_factory for f in fields_] == [
             *[Field.MISSING] * 4,
             list,
+            Field.MISSING
         ]
 
-    obj2 = replace(obj, a=1, b="b2", c=1.0, d=True, e=[1, 2, 3])
-    assert asdict(obj2) == {"a": 1, "b": "b2", "c": 1.0, "d": True, "e": [1, 2, 3]}
+    obj2 = replace(obj, a=1, b="b2", c=1.0, d=True, e=[1, 2, 3], f=dict())
+    assert asdict(obj2) == {"a": 1, "b": "b2", "c": 1.0, "d": True, "e": [1, 2, 3], "f": dict()}
 
     p = params(obj)
     assert p.eq is True
