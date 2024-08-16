@@ -107,6 +107,8 @@ def _fields_v1(obj: pydantic.BaseModel | type[pydantic.BaseModel]) -> Iterator[F
 
 def _constraints_v1(modelfield: Any) -> Constraints | None:
     kwargs = {}
+    if not hasattr(modelfield.type_, "__mro__"):
+        return None
     # check if the type is a pydantic constrained type
     for subt in modelfield.type_.__mro__:
         if (subt.__module__ or "").startswith("pydantic.types"):

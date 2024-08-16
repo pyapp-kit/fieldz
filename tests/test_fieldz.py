@@ -154,7 +154,7 @@ def _django_model() -> type:
         _named_tuple,
         _dataclassy_model,
         _pydantic_model,
-        _pydantic_model,
+        _pydantic_v1_model,
         _attrs_model,
         _msgspec_model,
         _sqlmodel,
