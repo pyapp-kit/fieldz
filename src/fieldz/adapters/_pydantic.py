@@ -32,9 +32,9 @@ def is_pydantic_model(obj: Any) -> bool:
     pydantic = sys.modules.get("pydantic", None)
     pydantic_v1 = sys.modules.get("pydantic.v1", None)
     cls = obj if isinstance(obj, type) else type(obj)
-    if pydantic is not None and issubclass(
-        cls, (pydantic.BaseModel, pydantic_v1.BaseModel)
-    ):
+    if pydantic is not None and issubclass(cls, pydantic.BaseModel):
+        return True
+    elif pydantic_v1 is not None and issubclass(cls, pydantic_v1.BaseModel):
         return True
     elif hasattr(cls, "__pydantic_model__") or hasattr(cls, "__pydantic_fields__"):
         return True

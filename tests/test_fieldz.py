@@ -182,14 +182,7 @@ def test_adapters(builder: Callable) -> None:
         assert [f.default for f in fields_] == [0, None, 0.0, False, [], ()]
     else:
         # namedtuples don't have default_factory
-        assert [f.default for f in fields_] == [
-            0,
-            None,
-            0.0,
-            False,
-            Field.MISSING,
-            ()
-        ]
+        assert [f.default for f in fields_] == [0, None, 0.0, False, Field.MISSING, ()]
         assert [f.default_factory for f in fields_] == [
             *[Field.MISSING] * 4,
             list,
@@ -197,7 +190,14 @@ def test_adapters(builder: Callable) -> None:
         ]
 
     obj2 = replace(obj, a=1, b="b2", c=1.0, d=True, e=[1, 2, 3], f={})
-    assert asdict(obj2) == {"a": 1, "b": "b2", "c": 1.0, "d": True, "e": [1, 2, 3], "f": {}}
+    assert asdict(obj2) == {
+        "a": 1,
+        "b": "b2",
+        "c": 1.0,
+        "d": True,
+        "e": [1, 2, 3],
+        "f": {},
+    }
 
     p = params(obj)
     assert p.eq is True
