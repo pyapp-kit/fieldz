@@ -3,11 +3,13 @@ from __future__ import annotations
 import sys
 from typing import TYPE_CHECKING, Any, ClassVar, Protocol, cast, overload
 
-from fieldz._types import DataclassParams, Field
+from fieldz._types import _MISSING_TYPE, DataclassParams, Field
 
 if TYPE_CHECKING:
+    from typing import Callable
+
     import attrs
-    from typing_extensions import TypeGuard
+    from typing_extensions import Literal, TypeGuard
 
     class AttrsInstance(Protocol):
         __attrs_attrs__: ClassVar[tuple[attrs.Attribute, ...]]
@@ -25,7 +27,7 @@ def is_attrs_class(obj: object) -> bool:
     """Return True if the class is an attrs class."""
     attr = sys.modules.get("attr", None)
     cls = obj if isinstance(obj, type) else type(obj)
-    return attr.has(cls) if attr is not None else False  # type: ignore [no-any-return]
+    return attr.has(cls) if attr is not None else False
 
 
 is_instance = is_attrs_class
@@ -62,9 +64,12 @@ def fields(class_or_instance: Any | type) -> tuple[Field, ...]:
     for f in attrs.fields(cls):
         f = cast(attrs.Attribute, f)
         default = Field.MISSING if f.default is attrs.NOTHING else f.default
-        default_factory = Field.MISSING
+        default_factory: (
+            Callable[[], Any] | Callable[[Any], Any] | Literal[_MISSING_TYPE.MISSING]
+        ) = Field.MISSING
+        # attrs typing lies about the type of attrs.Factory
         if isinstance(default, attrs.Factory):  # type: ignore [arg-type]
-            default_factory, default = default.factory, Field.MISSING
+            default_factory, default = default.factory, Field.MISSING  # type: ignore [union-attr]
         fields.append(
             Field(
                 name=f.name,

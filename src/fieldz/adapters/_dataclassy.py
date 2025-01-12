@@ -58,7 +58,7 @@ def fields(obj: Any | type) -> tuple:
     import dataclassy
 
     defaults = getattr(obj, "__defaults__", None) or getattr(obj, "__dict__", {})
-    fields = []
+    fields: list[Field] = []
     for name, type_ in dataclassy.fields(obj).items():
         default = defaults.get(name, Field.MISSING)
         default_factory: Any = Field.MISSING

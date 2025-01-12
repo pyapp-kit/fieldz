@@ -79,11 +79,16 @@ class Field(Generic[_T]):
     MISSING: ClassVar[Literal[_MISSING_TYPE.MISSING]] = _MISSING_TYPE.MISSING
 
     name: str
-    type: type[_T] | None = None
+    type: type[_T] | str | Any = None
     description: str | None = None
     title: str | None = None
     default: _T | Literal[_MISSING_TYPE.MISSING] = MISSING
-    default_factory: Callable[[], _T] | Literal[_MISSING_TYPE.MISSING] = MISSING
+    # both attrs and pydantic allow a default factory that takes the
+    # partially constructed object (attrs) or the init kwargs (pydantic)
+    # as an argument.
+    default_factory: (
+        Callable[[], _T] | Callable[[Any], _T] | Literal[_MISSING_TYPE.MISSING]
+    ) = MISSING
     repr: bool = True
     hash: bool | None = None
     init: bool = True

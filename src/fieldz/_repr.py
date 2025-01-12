@@ -10,7 +10,7 @@ import typing_extensions
 try:
     from typing import _TypingBase  # type: ignore[attr-defined]
 except ImportError:
-    from typing import _Final as _TypingBase  # type: ignore[attr-defined]
+    from typing import _Final as _TypingBase
 
 typing_base = _TypingBase
 
