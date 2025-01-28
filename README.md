@@ -38,13 +38,13 @@ class SomePydanticModel(pydantic.BaseModel):
 ### [`attrs.define`](https://www.attrs.org/en/stable/overview.html)
 
 ```python
-import attr
+import attrs
 
-@attr.define
+@attrs.define
 class SomeAttrsModel:
     a: int = 0
     b: str = "b"
-    c: list[int] = attr.field(default=attr.Factory(list))
+    c: list[int] = attrs.field(factory=list)
 ```
 
 ### [`msgspec.Struct`](https://jcristharif.com/msgspec/)
