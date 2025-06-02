@@ -62,7 +62,7 @@ def fields(class_or_instance: Any | type) -> tuple[Field, ...]:
     )
     fields: list[Field] = []
     for f in attrs.fields(cls):
-        f = cast(attrs.Attribute, f)
+        f = cast("attrs.Attribute", f)
         default = Field.MISSING if f.default is attrs.NOTHING else f.default
         default_factory: (
             Callable[[], Any] | Callable[[Any], Any] | Literal[_MISSING_TYPE.MISSING]
