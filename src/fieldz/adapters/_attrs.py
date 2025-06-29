@@ -76,9 +76,9 @@ def fields(class_or_instance: Any | type) -> tuple[Field, ...]:
                 type=f.type,
                 default=default,
                 default_factory=default_factory,
-                repr=f.repr,
+                repr=f.repr,  # type: ignore [arg-type]
                 init=f.init,
-                compare=f.eq,
+                compare=f.eq,  # type: ignore [arg-type]
                 kw_only=f.kw_only,
                 hash=f.hash,
                 native_field=f,
