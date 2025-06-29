@@ -14,6 +14,7 @@ __all__ = [
     "Field",
     "asdict",
     "astuple",
+    "display_as_type",
     "fields",
     "get_adapter",
     "params",
@@ -21,5 +22,6 @@ __all__ = [
 ]
 
 from ._functions import asdict, astuple, fields, get_adapter, params, replace
+from ._repr import display_as_type
 from ._types import Constraints, DataclassParams, Field
 from .adapters import Adapter

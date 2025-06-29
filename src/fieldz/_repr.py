@@ -35,6 +35,10 @@ else:
     WithArgsTypes = (typing._GenericAlias, types.GenericAlias, types.UnionType)  # type: ignore[attr-defined]
 
 
+def origin_is_literal(tp: type[Any] | None) -> bool:
+    return tp is typing_extensions.Literal  # type: ignore
+
+
 class PlainRepr(str):
     """String class where repr doesn't include quotes.
 
@@ -67,7 +71,12 @@ def display_as_type(obj: Any, *, modern_union: bool = False) -> str:
     if not isinstance(obj, (typing_base, WithArgsTypes, type)):
         obj = obj.__class__
 
-    if origin_is_union(typing_extensions.get_origin(obj)):
+    origin = typing_extensions.get_origin(obj)
+    if origin_is_literal(origin):
+        # For Literal types, represent the actual values, not their types
+        arg_reprs = [repr(arg) for arg in typing_extensions.get_args(obj)]
+        return f"Literal[{', '.join(arg_reprs)}]"
+    elif origin_is_union(origin):
         args = [display_as_type(x) for x in typing_extensions.get_args(obj)]
         if modern_union:
             return " | ".join(args)
