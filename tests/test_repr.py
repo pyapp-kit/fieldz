@@ -1,4 +1,4 @@
-from typing import Any, Generic, Optional, TypeVar, Union
+from typing import Any, Generic, Literal, Optional, TypeVar, Union
 
 from typing_extensions import Annotated
 
@@ -28,6 +28,7 @@ def test_PlainRepr() -> None:
     assert PlainRepr.for_type(Optional[int]) == "Optional[int]"
     assert PlainRepr.for_type(Union[int, str]) == "Union[int, str]"
     assert PlainRepr.for_type(Optional[int], modern_union=True) == "int | None"
+    assert PlainRepr.for_type(Literal[1, "2", (1, 2)]) == "Literal[1, '2', (1, 2)]"
 
     assert PlainRepr.for_type(func) == "func"
     assert PlainRepr.for_type(Foo()) == "Foo"
