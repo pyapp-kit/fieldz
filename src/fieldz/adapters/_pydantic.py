@@ -138,6 +138,8 @@ def _fields_v2(obj: pydantic.BaseModel | type[pydantic.BaseModel]) -> Iterator[F
     if hasattr(obj, "__pydantic_fields__"):  # v2 dataclass
         _fields = obj.__pydantic_fields__.items()
     else:
+        if not isinstance(obj, type):
+            obj = type(obj)
         _fields = obj.model_fields.items()
 
     annotations = getattr(obj, "__annotations__", {})
@@ -178,7 +180,7 @@ def fields(
     | type[pydantic.BaseModel]
     | type[PydanticV1BaseModel],
 ) -> tuple[Field, ...]:
-    if hasattr(obj, "model_fields") or hasattr(obj, "__pydantic_fields__"):
+    if hasattr(type(obj), "model_fields") or hasattr(obj, "__pydantic_fields__"):
         obj = cast("pydantic.BaseModel | type[pydantic.BaseModel]", obj)
         return tuple(_fields_v2(obj))
     if hasattr(obj, "__pydantic_model__"):
