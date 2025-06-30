@@ -180,7 +180,8 @@ def fields(
     | type[pydantic.BaseModel]
     | type[PydanticV1BaseModel],
 ) -> tuple[Field, ...]:
-    if hasattr(type(obj), "model_fields") or hasattr(obj, "__pydantic_fields__"):
+    cls = obj if isinstance(obj, type) else type(obj)
+    if hasattr(cls, "model_fields") or hasattr(obj, "__pydantic_fields__"):
         obj = cast("pydantic.BaseModel | type[pydantic.BaseModel]", obj)
         return tuple(_fields_v2(obj))
     if hasattr(obj, "__pydantic_model__"):

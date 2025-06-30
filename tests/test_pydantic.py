@@ -22,12 +22,13 @@ def test_pydantic_constraints() -> None:
         e: e_constr = "abc"  # type: ignore
         f: str = f_field
 
-    for f in fields(M):
-        assert f.constraints
-        if f.name in {"e", "f"}:
-            assert f.constraints.pattern == PATTERN
-        else:
-            assert f.constraints.ge == 42
-            assert f.constraints.le == 100
-            assert f.default == 50
-            assert f.default == 50
+    for obj in (M, M()):
+        for f in fields(obj):
+            assert f.constraints
+            if f.name in {"e", "f"}:
+                assert f.constraints.pattern == PATTERN
+            else:
+                assert f.constraints.ge == 42
+                assert f.constraints.le == 100
+                assert f.default == 50
+                assert f.default == 50
