@@ -91,12 +91,15 @@ def display_as_type(obj: Any, *, modern_union: bool = False) -> str:
             obj = obj.__class__
 
         if isinstance(obj, typing.NewType):
-            # NewType repr includes the module name prepended, so we use __name__ to get a clean name
-            # NOTE: ignoring attr-defined because NewType has __name__ but mypy can't see it for some reason;
-            # ignoring no-any-return because we know __name__ must return a string
+            # NewType repr includes the module name prepended, so we use __name__
+            # to get a clean name
+            # NOTE: ignoring attr-defined because NewType has __name__ but mypy
+            # can't see it for some reason; ignoring no-any-return because we
+            # know __name__ must return a string
             return obj.__name__  # type: ignore[attr-defined, no-any-return]
     else:
-        # We remove the NewType check because it doesn't work in isinstance prior to python 3.10
+        # We remove the NewType check because it doesn't work in isinstance prior to
+        # python 3.10
         if not isinstance(
             obj,
             (
