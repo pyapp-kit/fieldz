@@ -87,10 +87,18 @@ def display_as_type(obj: Any, *, modern_union: bool = False) -> str:
     ):
         obj = obj.__class__
 
-    if isinstance(obj, (typing.NewType, typing.TypeVar)):
-        # TypeVar repr includes a prepended ~ and NewType repr includes the module name prepended,
-        # so we use __name__ to get a clean name
+    if isinstance(obj, typing.TypeVar):
+        # TypeVar repr includes a prepended ~, so we use __name__ to get a clean name
         return obj.__name__
+
+    if sys.version_info >= (3, 10):
+        if isinstance(obj, typing.NewType):
+            # NewType repr includes the module name prepended, so we use __name__ to get a clean name
+            return obj.__name__
+    else:
+        # In python < 3.10, NewType was a function with __supertype__ set to the wrapped type
+        if callable(obj) and hasattr(obj, "__supertype__"):
+            return obj.__name__
 
     origin = typing_extensions.get_origin(obj)
     if origin_is_literal(origin):
