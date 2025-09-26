@@ -74,7 +74,17 @@ def display_as_type(obj: Any, *, modern_union: bool = False) -> str:
     elif obj in (None, type(None)):
         return "None"
 
-    if not isinstance(obj, (typing_base, WithArgsTypes, type, TypeAliasType, typing.TypeVar, typing.NewType)):
+    if not isinstance(
+        obj,
+        (
+            typing_base,
+            WithArgsTypes,
+            type,
+            TypeAliasType,
+            typing.TypeVar,
+            typing.NewType,
+        ),
+    ):
         obj = obj.__class__
 
     if isinstance(obj, (typing.NewType, typing.TypeVar)):

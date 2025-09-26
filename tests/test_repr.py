@@ -1,5 +1,5 @@
 import sys
-from typing import Any, Generic, Literal, Optional, TypeVar, Union, NewType, TypeAlias
+from typing import Any, Generic, Literal, NewType, Optional, TypeVar, Union
 
 import pytest
 from typing_extensions import Annotated
@@ -46,17 +46,27 @@ def test_PlainRepr() -> None:
     assert PlainRepr.for_type(NewInt) == "NewInt"
 
 
-@pytest.mark.skipif(sys.version_info < (3, 12), reason="requires Python 3.12 or newer to support typing syntactic sugar")
+@pytest.mark.skipif(
+    sys.version_info < (3, 12),
+    reason="requires Python 3.12 or newer to support typing syntactic sugar",
+)
 def test_PlainRepr_with_syntactic_sugar() -> None:
     # Test cases using the typing syntactic sugar of python >= 3.12
 
     type ExampleAlias = str | int
     assert PlainRepr.for_type(ExampleAlias) == "ExampleAlias"
-    assert PlainRepr.for_type(
-        ExampleAlias | tuple[ExampleAlias, ...]) == "Union[ExampleAlias, tuple[ExampleAlias, ...]]"
-    assert PlainRepr.for_type(ExampleAlias | tuple[ExampleAlias, ...],
-                              modern_union=True) == "ExampleAlias | tuple[ExampleAlias, ...]"
-    assert PlainRepr.for_type(Annotated[ExampleAlias, None]) == "Annotated[ExampleAlias, None]"
+    assert (
+        PlainRepr.for_type(ExampleAlias | tuple[ExampleAlias, ...])
+        == "Union[ExampleAlias, tuple[ExampleAlias, ...]]"
+    )
+    assert (
+        PlainRepr.for_type(ExampleAlias | tuple[ExampleAlias, ...], modern_union=True)
+        == "ExampleAlias | tuple[ExampleAlias, ...]"
+    )
+    assert (
+        PlainRepr.for_type(Annotated[ExampleAlias, None])
+        == "Annotated[ExampleAlias, None]"
+    )
     assert PlainRepr.for_type(dict[str, ExampleAlias]) == "dict[str, ExampleAlias]"
 
 
