@@ -20,6 +20,12 @@ if sys.version_info < (3, 9):
 else:
     from typing import GenericAlias as TypingGenericAlias  # type: ignore
 
+if sys.version_info < (3, 12):
+    # python < 3.12 does not have TypeAliasType
+    TypeAliasType = ()
+else:
+    from typing import TypeAliasType  # type: ignore
+
 if sys.version_info < (3, 10):
 
     def origin_is_union(tp: type[Any] | None) -> bool:
@@ -68,8 +74,13 @@ def display_as_type(obj: Any, *, modern_union: bool = False) -> str:
     elif obj in (None, type(None)):
         return "None"
 
-    if not isinstance(obj, (typing_base, WithArgsTypes, type)):
+    if not isinstance(obj, (typing_base, WithArgsTypes, type, TypeAliasType, typing.TypeVar, typing.NewType)):
         obj = obj.__class__
+
+    if isinstance(obj, (typing.NewType, typing.TypeVar)):
+        # TypeVar repr includes a prepended ~ and NewType repr includes the module name prepended,
+        # so we use __name__ to get a clean name
+        return obj.__name__
 
     origin = typing_extensions.get_origin(obj)
     if origin_is_literal(origin):
