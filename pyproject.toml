@@ -16,17 +16,17 @@ name = "fieldz"
 dynamic = ["version"]
 description = "Utilities for providing compatibility with many dataclass-like libraries"
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.10"
 license = { text = "BSD-3-Clause" }
 authors = [{ name = "Talley Lambert", email = "talley.lambert@gmail.com" }]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "License :: OSI Approved :: BSD License",
     "Typing :: Typed",
 ]
@@ -49,6 +49,9 @@ homepage = "https://github.com/pyapp-kit/fieldz"
 repository = "https://github.com/pyapp-kit/fieldz"
 
 
+[tool.hatch.envs.default]
+installer = "uv"
+
 # these let you run tests across all backends easily with:
 # hatch run test:test
 [tool.hatch.envs.test]
@@ -58,7 +61,7 @@ test = "pytest"
 
 [[tool.hatch.envs.test.matrix]]
 pydantic = ["v1", "v2"]
-python = ["3.8", "3.11"]
+python = ["3.10", "3.11", "3.12", "3.13"]
 
 [tool.hatch.envs.test.overrides]
 matrix.pydantic.extra-dependencies = [
@@ -72,7 +75,9 @@ matrix.pydantic.extra-dependencies = [
 
 [tool.ruff]
 line-length = 88
-target-version = "py38"
+target-version = "py310"
+fix = true
+unsafe-fixes = true
 
 [tool.ruff.lint]
 pydocstyle = { convention = "numpy" }
@@ -88,7 +93,7 @@ select = [
     "C4",   # flake8-comprehensions
     "A001", # flake8-builtins
     "RUF",  # ruff-specific rules
-    "TC",  # typecheck
+    "TC",   # typecheck
     "TID",  # tidy imports
 ]
 ignore = [

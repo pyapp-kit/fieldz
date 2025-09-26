@@ -5,9 +5,10 @@ from typing import TYPE_CHECKING, Any, ClassVar
 from fieldz._types import DataclassParams, Field
 
 if TYPE_CHECKING:
-    from typing import Iterable
+    from collections.abc import Iterable
+    from typing import TypeGuard
 
-    from typing_extensions import Self, TypeGuard
+    from typing_extensions import Self
 
     class NamedTupleInstance(tuple[Any, ...]):
         _field_defaults: ClassVar[dict[str, Any]]

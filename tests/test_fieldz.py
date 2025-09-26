@@ -1,5 +1,6 @@
 import dataclasses
-from typing import Any, Callable, List, NamedTuple, Optional, TypedDict
+from collections.abc import Callable
+from typing import Any, NamedTuple, Optional, TypedDict
 
 import pytest
 
@@ -11,10 +12,10 @@ def _dataclass_model() -> type:
     @dataclasses.dataclass
     class Model:
         a: int = 0
-        b: Optional[str] = None
+        b: str | None = None
         c: float = 0.0
         d: bool = False
-        e: List[int] = dataclasses.field(default_factory=list)
+        e: list[int] = dataclasses.field(default_factory=list)
         f: Any = ()
 
     return Model
@@ -23,10 +24,10 @@ def _dataclass_model() -> type:
 def _named_tuple() -> type:
     class Model(NamedTuple):
         a: int = 0
-        b: Optional[str] = None
+        b: str | None = None
         c: float = 0.0
         d: bool = False
-        e: List[int] = []  # noqa
+        e: list[int] = []  # noqa: RUF012
         f: Any = ()
 
     return Model
@@ -37,10 +38,10 @@ def _pydantic_v1_model_str() -> type:
 
     class Model(BaseModel):
         a: "int" = 0
-        b: "Optional[str]" = None
+        b: "str | None" = None
         c: "float" = 0.0
         d: "bool" = False
-        e: "List[int]" = Field(default_factory=list)
+        e: "list[int]" = Field(default_factory=list)
         f: "Any" = ()
 
     return Model
@@ -51,10 +52,10 @@ def _pydantic_v1_model() -> type:
 
     class Model(BaseModel):
         a: int = 0
-        b: Optional[str] = None
+        b: str | None = None
         c: float = 0.0
         d: bool = False
-        e: List[int] = Field(default_factory=list)
+        e: list[int] = Field(default_factory=list)
         f: Any = ()
 
     return Model
@@ -65,10 +66,10 @@ def _pydantic_model() -> type:
 
     class Model(BaseModel):
         a: int = 0
-        b: Optional[str] = None
+        b: str | None = None
         c: float = 0.0
         d: bool = False
-        e: List[int] = Field(default_factory=list)
+        e: list[int] = Field(default_factory=list)
         f: Any = ()
 
     return Model
@@ -80,10 +81,10 @@ def _pydantic_dataclass() -> type:
     @dataclass
     class Model:
         a: int = 0
-        b: Optional[str] = None
+        b: str | None = None
         c: float = 0.0
         d: bool = False
-        e: List[int] = dataclasses.field(default_factory=list)
+        e: list[int] = dataclasses.field(default_factory=list)
         f: Any = ()
 
     return Model
@@ -95,10 +96,10 @@ def _sqlmodel() -> type:
 
     class Model(SQLModel):
         a: int = 0
-        b: Optional[str] = None
+        b: str | None = None
         c: float = 0.0
         d: bool = False
-        e: List[int] = Field(default_factory=list)
+        e: list[int] = Field(default_factory=list)
         f: Any = ()
 
     return Model
@@ -110,10 +111,10 @@ def _attrs_model() -> type:
     @attr.define
     class Model:
         a: int = 0
-        b: Optional[str] = None
+        b: str | None = None
         c: float = 0.0
         d: bool = False
-        e: List[int] = attr.field(default=attr.Factory(list))
+        e: list[int] = attr.field(default=attr.Factory(list))
         f: Any = ()
 
     return Model
@@ -124,10 +125,10 @@ def _msgspec_model() -> type:
 
     class Model(msgspec.Struct):
         a: int = 0
-        b: Optional[str] = None
+        b: str | None = None
         c: float = 0.0
         d: bool = False
-        e: List[int] = msgspec.field(default_factory=list)
+        e: list[int] = msgspec.field(default_factory=list)
         f: Any = ()
 
     return Model
@@ -139,10 +140,10 @@ def _dataclassy_model() -> type:
     @dataclassy.dataclass
     class Model:
         a: int = 0
-        b: Optional[str] = None
+        b: str | None = None
         c: float = 0.0
         d: bool = False
-        e: List[int] = []  # noqa
+        e: list[int] = []
         f: Any = ()
 
     return Model
@@ -156,7 +157,7 @@ def _django_model() -> type:
         b: str = models.CharField(default="b", max_length=255)
         c: float = models.FloatField(default=0.0)
         d: bool = models.BooleanField(default=False)
-        e: List[int] = models.JSONField(default=list)
+        e: list[int] = models.JSONField(default=list)
         f: Any = ()
 
     return Model
@@ -187,10 +188,10 @@ def test_adapters(builder: Callable) -> None:
     assert [f.name for f in fields_] == ["a", "b", "c", "d", "e", "f"]
     assert [f.type for f in fields_] == [
         int,
-        Optional[str],
+        str | None,
         float,
         bool,
-        List[int],
+        list[int],
         Any,
     ]
     assert [f.frozen for f in fields_] == [False] * 6
@@ -227,15 +228,15 @@ def test_adapters(builder: Callable) -> None:
 def test_typed_dict() -> None:
     class Model(TypedDict):
         a: int
-        b: Optional[str]
+        b: str | None
         c: float
         d: bool
-        e: List[int]
+        e: list[int]
 
     assert fields(Model) == (
         Field(name="a", type=int),
-        Field(name="b", type=Optional[str]),
+        Field(name="b", type=Optional[str]),  # noqa: UP045
         Field(name="c", type=float),
         Field(name="d", type=bool),
-        Field(name="e", type=List[int]),
+        Field(name="e", type=list[int]),
     )
