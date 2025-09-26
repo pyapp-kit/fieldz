@@ -24,7 +24,7 @@ if sys.version_info < (3, 12):
     # python < 3.12 does not have TypeAliasType
     TypeAliasType = ()
 else:
-    from typing import TypeAliasType  # type: ignore
+    from typing import TypeAliasType
 
 if sys.version_info < (3, 10):
 
@@ -68,8 +68,8 @@ def display_as_type(obj: Any, *, modern_union: bool = False) -> str:
     Takes some logic from `typing._type_repr`.
     """
     if isinstance(obj, types.FunctionType):
-        # In python < 3.10, NewType was a function with __supertype__ set to the wrapped type,
-        # so NewTypes pass through here
+        # In python < 3.10, NewType was a function with __supertype__ set to the
+        # wrapped type, so NewTypes pass through here
         return obj.__name__
     elif obj is ...:
         return "..."
@@ -92,7 +92,9 @@ def display_as_type(obj: Any, *, modern_union: bool = False) -> str:
 
         if isinstance(obj, typing.NewType):
             # NewType repr includes the module name prepended, so we use __name__ to get a clean name
-            return obj.__name__
+            # NOTE: ignoring attr-defined because NewType has __name__ but mypy can't see it for some reason;
+            # ignoring no-any-return because we know __name__ must return a string
+            return obj.__name__  # type: ignore[attr-defined, no-any-return]
     else:
         # We remove the NewType check because it doesn't work in isinstance prior to python 3.10
         if not isinstance(
