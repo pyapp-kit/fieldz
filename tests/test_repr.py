@@ -1,11 +1,15 @@
-from typing import Any, Generic, Literal, Optional, TypeVar, Union
+import sys
+from typing import Any, Generic, Literal, NewType, Optional, TypeVar, Union
 
+import pytest
 from typing_extensions import Annotated
 
 import fieldz
 from fieldz._repr import PlainRepr
 
 T = TypeVar("T")
+
+NewInt = NewType("NewInt", int)
 
 
 def func() -> None:
@@ -36,6 +40,38 @@ def test_PlainRepr() -> None:
     assert "ParamFoo[int]" in PlainRepr.for_type(ParamFoo[int])
     assert PlainRepr.for_type(Any) == "Any"
     assert PlainRepr.for_type(Annotated[int, None]) == "Annotated[int, None]"
+
+    # test TypeVar and NewInt cases directly as their representation must be handled
+    # separately
+    assert PlainRepr.for_type(T) == "T"
+    assert PlainRepr.for_type(NewInt) == "NewInt"
+
+
+@pytest.mark.skipif(
+    sys.version_info < (3, 12),
+    reason="requires Python 3.12 or newer to support typing syntactic sugar",
+)
+def test_PlainRepr_with_syntactic_sugar() -> None:
+    # Test cases using the typing syntactic sugar of python >= 3.12
+
+    # Create a namespace dictionary to capture the exec'd variables
+    namespace = {}
+    exec("type ExampleAlias = str | int", namespace)
+    ExampleAlias = namespace["ExampleAlias"]
+    assert PlainRepr.for_type(ExampleAlias) == "ExampleAlias"
+    assert (
+        PlainRepr.for_type(ExampleAlias | tuple[ExampleAlias, ...])
+        == "Union[ExampleAlias, tuple[ExampleAlias, ...]]"
+    )
+    assert (
+        PlainRepr.for_type(ExampleAlias | tuple[ExampleAlias, ...], modern_union=True)
+        == "ExampleAlias | tuple[ExampleAlias, ...]"
+    )
+    assert (
+        PlainRepr.for_type(Annotated[ExampleAlias, None])
+        == "Annotated[ExampleAlias, None]"
+    )
+    assert PlainRepr.for_type(dict[str, ExampleAlias]) == "dict[str, ExampleAlias]"
 
 
 def test_rich_reprs() -> None:
