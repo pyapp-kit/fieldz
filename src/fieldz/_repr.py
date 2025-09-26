@@ -96,14 +96,14 @@ def display_as_type(obj: Any, *, modern_union: bool = False) -> str:
     else:
         # We remove the NewType check because it doesn't work in isinstance prior to python 3.10
         if not isinstance(
-                obj,
-                (
-                        typing_base,
-                        WithArgsTypes,
-                        type,
-                        TypeAliasType,
-                        typing.TypeVar,
-                ),
+            obj,
+            (
+                typing_base,
+                WithArgsTypes,
+                type,
+                TypeAliasType,
+                typing.TypeVar,
+            ),
         ):
             obj = obj.__class__
 
