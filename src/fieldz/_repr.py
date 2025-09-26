@@ -68,37 +68,48 @@ def display_as_type(obj: Any, *, modern_union: bool = False) -> str:
     Takes some logic from `typing._type_repr`.
     """
     if isinstance(obj, types.FunctionType):
+        # In python < 3.10, NewType was a function with __supertype__ set to the wrapped type,
+        # so NewTypes pass through here
         return obj.__name__
     elif obj is ...:
         return "..."
     elif obj in (None, type(None)):
         return "None"
 
-    if not isinstance(
-        obj,
-        (
-            typing_base,
-            WithArgsTypes,
-            type,
-            TypeAliasType,
-            typing.TypeVar,
-            typing.NewType,
-        ),
-    ):
-        obj = obj.__class__
-
-    if isinstance(obj, typing.TypeVar):
-        # TypeVar repr includes a prepended ~, so we use __name__ to get a clean name
-        return obj.__name__
-
     if sys.version_info >= (3, 10):
+        if not isinstance(
+            obj,
+            (
+                typing_base,
+                WithArgsTypes,
+                type,
+                TypeAliasType,
+                typing.TypeVar,
+                typing.NewType,
+            ),
+        ):
+            obj = obj.__class__
+
         if isinstance(obj, typing.NewType):
             # NewType repr includes the module name prepended, so we use __name__ to get a clean name
             return obj.__name__
     else:
-        # In python < 3.10, NewType was a function with __supertype__ set to the wrapped type
-        if callable(obj) and hasattr(obj, "__supertype__"):
-            return obj.__name__
+        # We remove the NewType check because it doesn't work in isinstance prior to python 3.10
+        if not isinstance(
+                obj,
+                (
+                        typing_base,
+                        WithArgsTypes,
+                        type,
+                        TypeAliasType,
+                        typing.TypeVar,
+                ),
+        ):
+            obj = obj.__class__
+
+    if isinstance(obj, typing.TypeVar):
+        # TypeVar repr includes a prepended ~, so we use __name__ to get a clean name
+        return obj.__name__
 
     origin = typing_extensions.get_origin(obj)
     if origin_is_literal(origin):
