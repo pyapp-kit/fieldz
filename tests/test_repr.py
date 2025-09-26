@@ -53,7 +53,10 @@ def test_PlainRepr() -> None:
 def test_PlainRepr_with_syntactic_sugar() -> None:
     # Test cases using the typing syntactic sugar of python >= 3.12
 
-    type ExampleAlias = str | int
+    # Create a namespace dictionary to capture the exec'd variables
+    namespace = {}
+    exec("type ExampleAlias = str | int", namespace)
+    ExampleAlias = namespace["ExampleAlias"]
     assert PlainRepr.for_type(ExampleAlias) == "ExampleAlias"
     assert (
         PlainRepr.for_type(ExampleAlias | tuple[ExampleAlias, ...])
