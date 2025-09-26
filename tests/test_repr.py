@@ -41,7 +41,8 @@ def test_PlainRepr() -> None:
     assert PlainRepr.for_type(Any) == "Any"
     assert PlainRepr.for_type(Annotated[int, None]) == "Annotated[int, None]"
 
-    # test TypeVar and NewInt cases directly as their representation must be handled separately
+    # test TypeVar and NewInt cases directly as their representation must be handled
+    # separately
     assert PlainRepr.for_type(T) == "T"
     assert PlainRepr.for_type(NewInt) == "NewInt"
 
