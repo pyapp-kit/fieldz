@@ -143,7 +143,7 @@ def _dataclassy_model() -> type:
         b: str | None = None
         c: float = 0.0
         d: bool = False
-        e: list[int] = []
+        e: list[int] = []  # noqa: RUF012
         f: Any = ()
 
     return Model

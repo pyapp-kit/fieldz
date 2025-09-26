@@ -64,7 +64,7 @@ def display_as_type(obj: Any, *, modern_union: bool = False) -> str:
     elif obj in (None, type(None)):
         return "None"
 
-    if not isinstance(  # noqa: UP038
+    if not isinstance(
         obj,
         (
             typing_base,
