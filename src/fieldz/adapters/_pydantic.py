@@ -3,7 +3,7 @@ from __future__ import annotations
 import dataclasses
 import re
 import sys
-from typing import TYPE_CHECKING, Any, Iterator, cast, overload
+from typing import TYPE_CHECKING, Any, cast, overload
 
 from fieldz._types import (
     Constraints,
@@ -14,10 +14,12 @@ from fieldz._types import (
 )
 
 if TYPE_CHECKING:
+    from collections.abc import Iterator
+    from typing import TypeGuard
+
     import pydantic
     import pydantic.fields
     from pydantic.v1 import BaseModel as PydanticV1BaseModel
-    from typing_extensions import TypeGuard
 
 
 @overload

@@ -6,7 +6,9 @@ from typing import TYPE_CHECKING, Any, ClassVar, Protocol
 from fieldz._types import DataclassParams, Field
 
 if TYPE_CHECKING:
-    from typing_extensions import TypedDict, TypeGuard
+    from typing import TypeGuard
+
+    from typing_extensions import TypedDict
 
     class DataclassyParams(TypedDict):
         init: bool

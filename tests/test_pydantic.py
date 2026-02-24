@@ -1,6 +1,7 @@
+from typing import Annotated
+
 import annotated_types as at
 from pydantic import BaseModel, Field, conint, constr
-from typing_extensions import Annotated
 
 from fieldz import fields
 

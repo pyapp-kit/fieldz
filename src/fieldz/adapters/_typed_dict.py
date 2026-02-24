@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Any
 from fieldz._types import DataclassParams, Field, _is_classvar
 
 if TYPE_CHECKING:
-    from typing_extensions import TypeGuard
+    from typing import TypeGuard
 
 
 def is_typed_dict(obj: Any) -> TypeGuard[dict]:

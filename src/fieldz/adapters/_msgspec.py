@@ -6,8 +6,9 @@ from typing import TYPE_CHECKING, Any, overload
 from fieldz._types import DataclassParams, Field
 
 if TYPE_CHECKING:
+    from typing import TypeGuard
+
     import msgspec
-    from typing_extensions import TypeGuard
 
 
 @overload

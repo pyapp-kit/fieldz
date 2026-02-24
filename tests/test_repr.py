@@ -1,8 +1,7 @@
 import sys
-from typing import Any, Generic, Literal, NewType, Optional, TypeVar, Union
+from typing import Annotated, Any, Generic, Literal, NewType, Optional, TypeVar, Union
 
 import pytest
-from typing_extensions import Annotated
 
 import fieldz
 from fieldz._repr import PlainRepr
@@ -29,14 +28,13 @@ def test_PlainRepr() -> None:
     assert PlainRepr.for_type(int) == "int"
     assert PlainRepr.for_type(...) == "..."
     assert PlainRepr.for_type(None) == "None"
-    assert PlainRepr.for_type(Optional[int]) == "Optional[int]"
-    assert PlainRepr.for_type(Union[int, str]) == "Union[int, str]"
-    assert PlainRepr.for_type(Optional[int], modern_union=True) == "int | None"
+    assert PlainRepr.for_type(Optional[int]) == "Optional[int]"  # noqa: UP045
+    assert PlainRepr.for_type(Union[int, str]) == "Union[int, str]"  # noqa: UP007
+    assert PlainRepr.for_type(Optional[int], modern_union=True) == "int | None"  # noqa: UP045
     assert PlainRepr.for_type(Literal[1, "2", (1, 2)]) == "Literal[1, '2', (1, 2)]"
 
     assert PlainRepr.for_type(func) == "func"
     assert PlainRepr.for_type(Foo()) == "Foo"
-    # in python <=3.9 the module appears to be in the qualname for Parametrized generics
     assert "ParamFoo[int]" in PlainRepr.for_type(ParamFoo[int])
     assert PlainRepr.for_type(Any) == "Any"
     assert PlainRepr.for_type(Annotated[int, None]) == "Annotated[int, None]"
