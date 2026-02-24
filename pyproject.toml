@@ -3,12 +3,9 @@
 requires = ["hatchling", "hatch-vcs"]
 build-backend = "hatchling.build"
 
+# https://hatch.pypa.io/latest/config/metadata/
 [tool.hatch.version]
 source = "vcs"
-
-[tool.hatch.build.targets.wheel]
-only-include = ["src"]
-sources = ["src"]
 
 # https://peps.python.org/pep-0621/
 [project]
@@ -20,7 +17,7 @@ requires-python = ">=3.10"
 license = { text = "BSD-3-Clause" }
 authors = [{ name = "Talley Lambert", email = "talley.lambert@gmail.com" }]
 classifiers = [
-    "Development Status :: 3 - Alpha",
+    "Development Status :: 4 - Beta",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
@@ -30,49 +27,37 @@ classifiers = [
     "License :: OSI Approved :: BSD License",
     "Typing :: Typed",
 ]
-dependencies = ["typing_extensions"]
+dependencies = ["typing-extensions>=4.10.0"]
 
-[project.optional-dependencies]
-test = [
-    "pytest",
-    "pytest-cov",
-    "attrs",
-    "dataclassy",
-    "msgspec",
-    "pydantic",
-    "annotated_types",
-]
-dev = ["ipython", "mypy", "pdbpp", "rich", "ruff", "hatch", "pre-commit-uv"]
 
 [project.urls]
 homepage = "https://github.com/pyapp-kit/fieldz"
 repository = "https://github.com/pyapp-kit/fieldz"
 
-
-[tool.hatch.envs.default]
-installer = "uv"
-
-# these let you run tests across all backends easily with:
-# hatch run test:test
-[tool.hatch.envs.test]
-
-[tool.hatch.envs.test.scripts]
-test = "pytest"
-
-[[tool.hatch.envs.test.matrix]]
-pydantic = ["v1", "v2"]
-python = ["3.10", "3.11", "3.12", "3.13"]
-
-[tool.hatch.envs.test.overrides]
-matrix.pydantic.extra-dependencies = [
-    { value = "pydantic<2", if = [
-        "v1",
-    ] },
-    { value = "pydantic>=2", if = [
-        "v2",
-    ] },
+[dependency-groups]
+test = [
+    "annotated-types>=0.6.0",
+    "attrs>=23.2.0",
+    "dataclassy>=1.0.1",
+    "msgspec>=0.18.0",
+    "pydantic>=2.6.0",
+    "pytest>=9.0.2",
+    "pytest-cov>=7.0.0",
+]
+dev = [
+    { include-group = "test" },
+    "ipython>=8.38.0",
+    "mypy>=1.19.1",
+    "pdbpp>=0.12.1 ; sys_platform != 'win32'",
+    "prek>=0.3.3",
+    "rich>=14.3.3",
+    "ruff>=0.15.2",
 ]
 
+[tool.uv.sources]
+fieldz = { workspace = true }
+
+# https://docs.astral.sh/ruff
 [tool.ruff]
 line-length = 88
 target-version = "py310"

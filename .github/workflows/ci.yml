@@ -17,23 +17,56 @@ jobs:
   check-manifest:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - run: pipx run check-manifest
 
   test:
-    uses: pyapp-kit/workflows/.github/workflows/test-pyrepo.yml@v2
-    with:
-      os: ${{ matrix.os }}
-      python-version: ${{ matrix.python-version }}
-      pip-post-installs: ${{ matrix.pydantic }}
-      pip-install-pre-release: ${{ github.event_name == 'schedule' }}
-      coverage-upload: artifact
+    name: >-
+      Test ${{ matrix.os }} py${{ matrix.python-version }}
+        ${{ matrix.pydantic }}
+        ${{ matrix.resolution != 'highest' && matrix.resolution || '' }}
+    runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
         python-version: ["3.10", "3.11", "3.12", "3.13", "3.14"]
         os: [ubuntu-latest, macos-latest, windows-latest]
-        pydantic: ["pydantic", "'pydantic<2'"]
+        pydantic: ["pydantic"]
+        resolution: ["highest"]
+        include:
+          - os: ubuntu-latest
+            python-version: "3.12"
+            pydantic: "'pydantic<2'"
+          - os: ubuntu-latest
+            python-version: "3.11"
+            resolution: "lowest-direct"
+
+    steps:
+      - uses: actions/checkout@v6
+      - uses: astral-sh/setup-uv@v7
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install Dependencies
+        run: uv sync --group test
+        env:
+          UV_NO_DEV: 1
+          UV_RESOLUTION: ${{ matrix.resolution || 'highest' }}
+          UV_PRERELEASE: ${{ github.event_name == 'schedule' && 'allow' || 'if-necessary-or-explicit' }}
+
+      - name: Install pydantic variant
+        if: matrix.pydantic != 'pydantic'
+        run: uv pip install ${{ matrix.pydantic }}
+
+      - name: Test
+        run: uv run --no-sync coverage run -p -m pytest -v
+
+      - name: Upload coverage
+        uses: actions/upload-artifact@v6
+        with:
+          name: covreport-${{ matrix.os }}-py${{ matrix.python-version }}-${{ matrix.pydantic }}-${{ matrix.resolution }}
+          path: ./.coverage*
+          include-hidden-files: true
 
   upload_coverage:
     if: always()
@@ -41,34 +74,32 @@ jobs:
     uses: pyapp-kit/workflows/.github/workflows/upload-coverage.yml@v2
     secrets: inherit
 
-  deploy:
-    name: Deploy
-    needs: test
-    if: success() && startsWith(github.ref, 'refs/tags/') && github.event_name != 'schedule'
+  build-and-inspect-package:
+    name: Build & inspect package.
     runs-on: ubuntu-latest
-
-    permissions:
-      id-token: write # for trusted publishing on PyPi
-      contents: write # allows writing releases
-
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
+      - uses: hynek/build-and-inspect-python-package@v2
 
-      - name: 🐍 Set up Python
-        uses: actions/setup-python@v6
+  upload-to-pypi:
+    name: Upload package to PyPI
+    needs: [test, build-and-inspect-package]
+    if: success() && startsWith(github.ref, 'refs/tags/') && github.event_name != 'schedule'
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: write
+
+    steps:
+      - name: Download built artifact to dist/
+        uses: actions/download-artifact@v7
         with:
-          python-version: "3.x"
-
-      - name: 👷 Build
-        run: |
-          python -m pip install build
-          python -m build
-
+          name: Packages
+          path: dist
       - name: 🚢 Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
-
       - uses: softprops/action-gh-release@v2
         with:
           generate_release_notes: true
