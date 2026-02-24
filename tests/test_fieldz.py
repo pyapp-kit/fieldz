@@ -256,3 +256,9 @@ def test_typed_dict() -> None:
         Field(name="d", type=bool),
         Field(name="e", type=list[int]),
     )
+
+
+def test_missing_has_no_doc() -> None:
+    """MISSING.__doc__ should be None, not inherited enum doc. gh-41."""
+    assert Field.MISSING.__doc__ is None
+    assert getattr(Field.MISSING, "__doc__", None) is None
