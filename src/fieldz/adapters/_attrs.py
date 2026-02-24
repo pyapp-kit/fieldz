@@ -6,10 +6,10 @@ from typing import TYPE_CHECKING, Any, ClassVar, Protocol, cast, overload
 from fieldz._types import _MISSING_TYPE, DataclassParams, Field
 
 if TYPE_CHECKING:
-    from typing import Callable
+    from collections.abc import Callable
+    from typing import Literal, TypeGuard
 
     import attrs
-    from typing_extensions import Literal, TypeGuard
 
     class AttrsInstance(Protocol):
         __attrs_attrs__: ClassVar[tuple[attrs.Attribute, ...]]

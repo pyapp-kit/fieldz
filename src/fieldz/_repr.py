@@ -14,11 +14,6 @@ except ImportError:
 
 typing_base = _TypingBase
 
-if sys.version_info < (3, 9):
-    # python < 3.9 does not have GenericAlias (list[int], tuple[str, ...] and so on)
-    TypingGenericAlias = ()
-else:
-    from typing import GenericAlias as TypingGenericAlias  # type: ignore
 
 if sys.version_info < (3, 12):
     # python < 3.12 does not have TypeAliasType
@@ -26,19 +21,12 @@ if sys.version_info < (3, 12):
 else:
     from typing import TypeAliasType
 
-if sys.version_info < (3, 10):
 
-    def origin_is_union(tp: type[Any] | None) -> bool:
-        return tp is typing.Union
+def origin_is_union(tp: type[Any] | None) -> bool:
+    return tp is typing.Union or tp is types.UnionType  # type: ignore
 
-    WithArgsTypes = (TypingGenericAlias,)
 
-else:
-
-    def origin_is_union(tp: type[Any] | None) -> bool:
-        return tp is typing.Union or tp is types.UnionType  # type: ignore
-
-    WithArgsTypes = (typing._GenericAlias, types.GenericAlias, types.UnionType)  # type: ignore[attr-defined]
+WithArgsTypes = (typing._GenericAlias, types.GenericAlias, types.UnionType)  # type: ignore[attr-defined]
 
 
 def origin_is_literal(tp: type[Any] | None) -> bool:
@@ -76,41 +64,26 @@ def display_as_type(obj: Any, *, modern_union: bool = False) -> str:
     elif obj in (None, type(None)):
         return "None"
 
-    if sys.version_info >= (3, 10):
-        if not isinstance(
-            obj,
-            (
-                typing_base,
-                WithArgsTypes,
-                type,
-                TypeAliasType,
-                typing.TypeVar,
-                typing.NewType,
-            ),
-        ):
-            obj = obj.__class__
+    if not isinstance(
+        obj,
+        (
+            typing_base,
+            WithArgsTypes,
+            type,
+            TypeAliasType,
+            typing.TypeVar,
+            typing.NewType,
+        ),
+    ):
+        obj = obj.__class__
 
-        if isinstance(obj, typing.NewType):
-            # NewType repr includes the module name prepended, so we use __name__
-            # to get a clean name
-            # NOTE: ignoring attr-defined because NewType has __name__ but mypy
-            # can't see it for some reason; ignoring no-any-return because we
-            # know __name__ must return a string
-            return obj.__name__  # type: ignore[attr-defined, no-any-return]
-    else:
-        # We remove the NewType check because it doesn't work in isinstance prior to
-        # python 3.10
-        if not isinstance(
-            obj,
-            (
-                typing_base,
-                WithArgsTypes,
-                type,
-                TypeAliasType,
-                typing.TypeVar,
-            ),
-        ):
-            obj = obj.__class__
+    if isinstance(obj, typing.NewType):
+        # NewType repr includes the module name prepended, so we use __name__
+        # to get a clean name
+        # NOTE: ignoring attr-defined because NewType has __name__ but mypy
+        # can't see it for some reason; ignoring no-any-return because we
+        # know __name__ must return a string
+        return obj.__name__  # type: ignore[attr-defined, no-any-return]
 
     if isinstance(obj, typing.TypeVar):
         # TypeVar repr includes a prepended ~, so we use __name__ to get a clean name

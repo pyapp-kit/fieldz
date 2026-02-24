@@ -1,8 +1,7 @@
 from dataclasses import dataclass
-from typing import List
+from typing import Annotated
 
 import annotated_types as at
-from typing_extensions import Annotated
 
 from fieldz import fields
 
@@ -14,7 +13,7 @@ def test_annotated_types() -> None:
         span: Annotated[float, at.Interval(ge=0, le=10)]
         even: Annotated[int, at.MultipleOf(2)]
         # note that annotated types will NOT iterate min_length=0
-        my_list: Annotated[List[int], at.Len(1, 10)]
+        my_list: Annotated[list[int], at.Len(1, 10)]
         lower_name: Annotated[str, at.Predicate(str.islower)]
         # TODO: determine how to handle nested Annotated types
         # factors: List[Annotated[str, at.Predicate(str.islower)]]
@@ -45,7 +44,7 @@ def test_msgspec_constraints() -> None:
         age: Annotated[int, Meta(gt=18)]
         span: Annotated[float, Meta(ge=0, le=10)]
         even: Annotated[int, Meta(multiple_of=2)]
-        my_list: Annotated[List[int], Meta(min_length=1, max_length=10)]
+        my_list: Annotated[list[int], Meta(min_length=1, max_length=10)]
         # msgspec puts title and description in the Meta object
         with_title: Annotated[str, Meta(title="Title", description="Description")]
         with_tz: Annotated[int, Meta(tz=True)]

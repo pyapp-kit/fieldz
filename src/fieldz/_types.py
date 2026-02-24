@@ -6,38 +6,35 @@ import sys
 import warnings
 from typing import (
     TYPE_CHECKING,
+    Annotated,
     Any,
-    Callable,
     ClassVar,
     Generic,
-    Iterable,
     Literal,
-    Mapping,
     TypeVar,
+    get_args,
+    get_origin,
 )
-
-# python 3.8's `get_origin` is not Annotated-aware
-from typing_extensions import Annotated, get_args, get_origin
 
 from fieldz._repr import PlainRepr
 
 if TYPE_CHECKING:
     import builtins
+    from collections.abc import Callable, Iterable, Mapping
 
     from typing_extensions import Self
 
 _T = TypeVar("_T")
 
-DC_KWARGS = {"frozen": True}
-if sys.version_info >= (3, 10):
-    DC_KWARGS["slots"] = True
+DC_KWARGS = {"frozen": True, "slots": True}
 
 
 class _MISSING_TYPE(enum.Enum):
     MISSING = "MISSING"
+    __doc__ = None
 
     def __repr__(self) -> str:
-        return self.value
+        return str(self.value)
 
 
 @dataclasses.dataclass(**DC_KWARGS)
@@ -185,7 +182,7 @@ def _parse_annotatedtypes_meta(metadata: list[Any]) -> dict[str, Any]:
     a_kwargs = {}
     for item in metadata:
         # annotated_types >= 0.3.0 is supported
-        if isinstance(item, (at.BaseMetadata, at.GroupedMetadata)):
+        if isinstance(item, at.BaseMetadata | at.GroupedMetadata):
             values = {k: getattr(item, k) for k in CONSTRAINT_NAMES if hasattr(item, k)}
             a_kwargs.update(values)
             # annotated types calls the value of a Predicate "func"
