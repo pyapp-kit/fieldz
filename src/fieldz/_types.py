@@ -31,9 +31,10 @@ DC_KWARGS = {"frozen": True, "slots": True}
 
 class _MISSING_TYPE(enum.Enum):
     MISSING = "MISSING"
+    __doc__ = None
 
     def __repr__(self) -> str:
-        return self.value
+        return str(self.value)
 
 
 @dataclasses.dataclass(**DC_KWARGS)
