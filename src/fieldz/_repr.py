@@ -26,7 +26,8 @@ def origin_is_union(tp: type[Any] | None) -> bool:
     return tp is typing.Union or tp is types.UnionType  # type: ignore
 
 
-WithArgsTypes = (typing._GenericAlias, types.GenericAlias, types.UnionType)  # type: ignore[attr-defined]
+_GenericTypes = (typing._GenericAlias, types.GenericAlias)  # type: ignore[attr-defined]
+WithArgsTypes = (*_GenericTypes, types.UnionType)
 
 
 def origin_is_literal(tp: type[Any] | None) -> bool:
@@ -102,7 +103,7 @@ def display_as_type(obj: Any, *, modern_union: bool = False) -> str:
             args.remove("None")
             return f"Optional[{args[0]}]"
         return f"Union[{', '.join(args)}]"
-    elif isinstance(obj, WithArgsTypes):
+    elif isinstance(obj, _GenericTypes):
         argstr = ", ".join(map(display_as_type, typing_extensions.get_args(obj)))
         return f"{obj.__qualname__}[{argstr}]"
     elif isinstance(obj, type):
