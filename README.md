@@ -4,7 +4,7 @@
 [![PyPI](https://img.shields.io/pypi/v/fieldz.svg?color=green)](https://pypi.org/project/fieldz)
 [![Python Version](https://img.shields.io/pypi/pyversions/fieldz.svg?color=green)](https://python.org)
 [![CI](https://github.com/pyapp-kit/fieldz/actions/workflows/ci.yml/badge.svg)](https://github.com/pyapp-kit/fieldz/actions/workflows/ci.yml)
-[![codecov](https://codecov.io/gh/pyapp-kit/fieldz/branch/main/graph/badge.svg)](https://codecov.io/gh/pyapp-kit/fieldz)
+[![codecov](https://codecov.io/github/pyapp-kit/fieldz/graph/badge.svg?token=dtN8x5ZQkr)](https://codecov.io/github/pyapp-kit/fieldz)
 
 Unified API for working with multiple dataclass-like libraries
 
