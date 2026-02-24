@@ -49,7 +49,8 @@ def replace(obj: NamedTupleInstance, /, **changes: Any) -> NamedTupleInstance:
 
 def fields(obj: NamedTupleInstance | type[NamedTupleInstance]) -> tuple[Field, ...]:
     """Return a tuple of fields for the class or instance."""
-    annotations = getattr(obj, "__annotations__", {})
+    cls = obj if isinstance(obj, type) else type(obj)
+    annotations = getattr(cls, "__annotations__", {})
     defaults = getattr(obj, "_field_defaults", {})
     return tuple(
         Field(name=name, type=annotations.get(name, Any), default=defaults.get(name))

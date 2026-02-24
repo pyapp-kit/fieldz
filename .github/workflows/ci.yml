@@ -37,8 +37,10 @@ jobs:
           - os: ubuntu-latest
             python-version: "3.12"
             pydantic: "'pydantic<2'"
+            pydantic-label: "pydantic-v1"
           - os: ubuntu-latest
             python-version: "3.11"
+            pydantic: "pydantic"
             resolution: "lowest-direct"
 
     steps:
@@ -64,7 +66,7 @@ jobs:
       - name: Upload coverage
         uses: actions/upload-artifact@v6
         with:
-          name: covreport-${{ matrix.os }}-py${{ matrix.python-version }}-${{ matrix.pydantic }}-${{ matrix.resolution }}
+          name: covreport-${{ matrix.os }}-py${{ matrix.python-version }}-${{ matrix.pydantic-label || 'pydantic' }}-${{ matrix.resolution }}
           path: ./.coverage*
           include-hidden-files: true
 

@@ -1,4 +1,5 @@
 import dataclasses
+import sys
 from collections.abc import Callable
 from typing import Any, NamedTuple, Optional, TypedDict
 
@@ -6,6 +7,8 @@ import pytest
 
 from fieldz import Field, asdict, astuple, fields, params, replace
 from fieldz.adapters._named_tuple import is_named_tuple
+
+PY314 = sys.version_info >= (3, 14)
 
 
 def _dataclass_model() -> type:
@@ -168,10 +171,23 @@ def _django_model() -> type:
     [
         _dataclass_model,
         _named_tuple,
-        _dataclassy_model,
+        pytest.param(
+            _dataclassy_model,
+            marks=pytest.mark.skipif(PY314, reason="dataclassy broken on 3.14"),
+        ),
         _pydantic_model,
-        _pydantic_v1_model,
-        _pydantic_v1_model_str,
+        pytest.param(
+            _pydantic_v1_model,
+            marks=pytest.mark.skipif(
+                PY314, reason="pydantic v1 incompatible with 3.14"
+            ),
+        ),
+        pytest.param(
+            _pydantic_v1_model_str,
+            marks=pytest.mark.skipif(
+                PY314, reason="pydantic v1 incompatible with 3.14"
+            ),
+        ),
         _attrs_model,
         _msgspec_model,
         _sqlmodel,
