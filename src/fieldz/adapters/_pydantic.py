@@ -85,12 +85,16 @@ def _fields_v1(obj: PydanticV1BaseModel | type[PydanticV1BaseModel]) -> Iterator
             if callable(modelfield.default_factory)
             else Field.MISSING
         )
-        default = (
-            Field.MISSING
-            if factory is not Field.MISSING
-            or modelfield.default in (Undefined, Ellipsis)
-            else modelfield.default
-        )
+
+        if factory is not Field.MISSING:
+            default = Field.MISSING
+        elif modelfield.default in (Undefined, Ellipsis):
+            default = Field.MISSING
+        elif modelfield.default is None and modelfield.required:
+            default = Field.MISSING
+        else:
+            default = modelfield.default
+
         # backport from pydantic2
         _extra_dict = modelfield.field_info.extra.copy()
         if "json_schema_extra" in _extra_dict:
@@ -100,7 +104,7 @@ def _fields_v1(obj: PydanticV1BaseModel | type[PydanticV1BaseModel]) -> Iterator
             name=name,
             type=annotations.get(name),  # rather than outer_type_
             default=default,
-            default_factory=(factory if callable(factory) else Field.MISSING),
+            default_factory=factory,
             native_field=modelfield,
             description=modelfield.field_info.description,
             metadata=_extra_dict,
