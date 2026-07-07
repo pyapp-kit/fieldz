@@ -14,6 +14,7 @@ PY314 = sys.version_info >= (3, 14)
 def _dataclass_model() -> type:
     @dataclasses.dataclass
     class Model:
+        required: int
         a: int = 0
         b: str | None = None
         c: float = 0.0
@@ -26,6 +27,7 @@ def _dataclass_model() -> type:
 
 def _named_tuple() -> type:
     class Model(NamedTuple):
+        required: int
         a: int = 0
         b: str | None = None
         c: float = 0.0
@@ -40,6 +42,7 @@ def _pydantic_v1_model_str() -> type:
     from pydantic.v1 import BaseModel, Field
 
     class Model(BaseModel):
+        required: "int"
         a: "int" = 0
         b: "str | None" = None
         c: "float" = 0.0
@@ -54,6 +57,7 @@ def _pydantic_v1_model() -> type:
     from pydantic.v1 import BaseModel, Field
 
     class Model(BaseModel):
+        required: int
         a: int = 0
         b: str | None = None
         c: float = 0.0
@@ -68,6 +72,7 @@ def _pydantic_model() -> type:
     from pydantic import BaseModel, Field
 
     class Model(BaseModel):
+        required: int
         a: int = 0
         b: str | None = None
         c: float = 0.0
@@ -83,6 +88,7 @@ def _pydantic_dataclass() -> type:
 
     @dataclass
     class Model:
+        required: int
         a: int = 0
         b: str | None = None
         c: float = 0.0
@@ -98,6 +104,7 @@ def _sqlmodel() -> type:
     from sqlmodel import Field, SQLModel
 
     class Model(SQLModel):
+        required: int
         a: int = 0
         b: str | None = None
         c: float = 0.0
@@ -113,6 +120,7 @@ def _attrs_model() -> type:
 
     @attr.define
     class Model:
+        required: int
         a: int = 0
         b: str | None = None
         c: float = 0.0
@@ -127,6 +135,7 @@ def _msgspec_model() -> type:
     import msgspec
 
     class Model(msgspec.Struct):
+        required: int
         a: int = 0
         b: str | None = None
         c: float = 0.0
@@ -142,6 +151,7 @@ def _dataclassy_model() -> type:
 
     @dataclassy.dataclass
     class Model:
+        required: int
         a: int = 0
         b: str | None = None
         c: float = 0.0
@@ -156,6 +166,7 @@ def _django_model() -> type:
     from django.db import models
 
     class Model(models.Model):
+        required: int = models.IntegerField()
         a: int = models.IntegerField(default=0)
         b: str = models.CharField(default="b", max_length=255)
         c: float = models.FloatField(default=0.0)
@@ -197,12 +208,21 @@ def _django_model() -> type:
 )
 def test_adapters(builder: Callable) -> None:
     model = builder()
-    obj = model()
-    assert asdict(obj) == {"a": 0, "b": None, "c": 0.0, "d": False, "e": [], "f": ()}
-    assert astuple(obj) == (0, None, 0.0, False, [], ())
+    obj = model(required=0)
+    assert asdict(obj) == {
+        "required": 0,
+        "a": 0,
+        "b": None,
+        "c": 0.0,
+        "d": False,
+        "e": [],
+        "f": (),
+    }
+    assert astuple(obj) == (0, 0, None, 0.0, False, [], ())
     fields_ = fields(obj)
-    assert [f.name for f in fields_] == ["a", "b", "c", "d", "e", "f"]
+    assert [f.name for f in fields_] == ["required", "a", "b", "c", "d", "e", "f"]
     assert [f.type for f in fields_] == [
+        int,
         int,
         str | None,
         float,
@@ -210,20 +230,29 @@ def test_adapters(builder: Callable) -> None:
         list[int],
         Any,
     ]
-    assert [f.frozen for f in fields_] == [False] * 6
+    assert [f.frozen for f in fields_] == [False] * 7
     if is_named_tuple(obj):
-        assert [f.default for f in fields_] == [0, None, 0.0, False, [], ()]
+        assert [f.default for f in fields_] == [None, 0, None, 0.0, False, [], ()]
     else:
         # namedtuples don't have default_factory
-        assert [f.default for f in fields_] == [0, None, 0.0, False, Field.MISSING, ()]
+        assert [f.default for f in fields_] == [
+            Field.MISSING,
+            0,
+            None,
+            0.0,
+            False,
+            Field.MISSING,
+            (),
+        ]
         assert [f.default_factory for f in fields_] == [
-            *[Field.MISSING] * 4,
+            *[Field.MISSING] * 5,
             list,
             Field.MISSING,
         ]
 
-    obj2 = replace(obj, a=1, b="b2", c=1.0, d=True, e=[1, 2, 3], f={})
+    obj2 = replace(obj, required=-1, a=1, b="b2", c=1.0, d=True, e=[1, 2, 3], f={})
     assert asdict(obj2) == {
+        "required": -1,
         "a": 1,
         "b": "b2",
         "c": 1.0,
