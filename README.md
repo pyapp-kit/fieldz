@@ -17,6 +17,7 @@ There are many libraries that implement a similar dataclass-like pattern!
 ```python
 import dataclasses
 
+
 @dataclasses.dataclass
 class SomeDataclass:
     a: int = 0
@@ -29,6 +30,7 @@ class SomeDataclass:
 ```python
 import pydantic
 
+
 class SomePydanticModel(pydantic.BaseModel):
     a: int = 0
     b: str = "b"
@@ -39,6 +41,7 @@ class SomePydanticModel(pydantic.BaseModel):
 
 ```python
 import attrs
+
 
 @attrs.define
 class SomeAttrsModel:
@@ -51,6 +54,7 @@ class SomeAttrsModel:
 
 ```python
 import msgspec
+
 
 class SomeMsgspecStruct(msgspec.Struct):
     a: int = 0
@@ -74,14 +78,18 @@ extending the API from `dataclasses` when possible).
 def fields(obj: Any) -> tuple[Field, ...]:
     """Return a tuple of fieldz.Field objects for the object."""
 
+
 def replace(obj: Any, /, **changes: Any) -> Any:
     """Return a copy of obj with the specified changes."""
+
 
 def asdict(obj: Any) -> dict[str, Any]:
     """Return a dict representation of obj."""
 
+
 def astuple(obj: Any) -> tuple[Any, ...]:
     """Return a tuple representation of obj."""
+
 
 def params(obj: Any) -> DataclassParams:
     """Return parameters used to define the dataclass."""
